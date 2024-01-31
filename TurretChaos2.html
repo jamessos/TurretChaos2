@@ -1,0 +1,5993 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>turretchaos2</title>
+		<script src="p5.js"></script>
+		<style>
+			body {
+				margin: auto;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		
+	</body>
+	<script> 
+
+		var stage
+
+		var spawnTime = 30
+
+		var deathTime = 15
+
+		var explosionFrames = []
+
+		var spinEnemyAsset = ["", "", ""]
+
+		var backgroundImg
+
+		var expFrames = 12
+		
+		var main = {
+			x: 0,
+			y: 0,
+			size: 100,
+			weight: 100,
+			
+			reload: {
+				ing: 0,
+				timer: 0,
+			},
+
+			status: [{
+				type: null,
+				duration: null,
+				intensity: null,
+			},
+			],
+
+			statusDisplay: [
+				{
+					type: "fire",
+					duration: 0,
+				},
+				{
+					type: "stun",
+					duration: 0,
+				},
+				{
+					type: "vulnerable",
+					duration: 0,
+				},
+				{
+					type: "slow",
+					duration: 0,
+				},
+				{
+					type: "weak",
+					duration: 0,
+				},
+				{
+					type: "regen",
+					duration: 0,
+				},
+				{
+					type: "speed",
+					duration: 0,
+				},
+				{
+					type: "shield",
+					duration: 0,
+				},
+				{
+					type: "strong",
+					duration: 0,
+				},
+				{
+					type: "spike",
+					duration: 0,
+				},
+				{
+					type: "unspike",
+					duration: 0,
+				},
+			],
+
+			stunned: 0,
+
+			v: {
+				x: 0,
+				y: 0,
+				max: 25,
+				increase: 4,
+				stable: 0.5
+			},
+
+			attack: {
+				timer: 0,
+				bodyDamage: 50,
+				ammoLeft: 30,
+
+				
+				ammo: 30,
+				shots: 1,
+				atsp: 10,
+				reload: 30,
+				recoil: 0,
+
+				bullet: {
+					target: 1,
+					range: 2000,
+					weight: 1,
+					speed: 60,
+					explode: false,
+					dmg: 50,
+					regDmg: 50,
+					accuracy: 50,
+					size: 15,
+					visuals: {
+						color: '#aaaaaa',
+						borderWidth: 2,
+						border: '#000000',
+					},
+					effects: [
+						{
+							type: null,
+							duration: null,
+							intensity: null,
+						},
+					]
+				},	
+			},
+
+			hp: {
+				left: 2000,
+				max: 2000,
+				heal: 0,
+				shieldVal: 1,
+				bodyDmgShield: 1,
+			},
+
+			visuals: {
+				imgSet: [
+					{
+						name: "",
+						x: 0,
+						y: 0,
+					},
+				],
+				timer: 0,
+				tint: 255,
+				rotate: 0,
+			},
+
+			ability: {
+				heal: { 
+					firstTime: 0,
+					timer: 0,
+					target: 30,
+					slowdown: 0.4,
+					amount: 100,
+					regen: [{
+						type: "regen",
+						duration: 120,
+						intensity: 2
+					}]
+				},
+				t1: {
+					type: "banish",
+					timer: 0,
+					target: 150,
+				},
+				t2: {
+					type: "power",
+					timer: 0,
+					target: 300,
+				},
+				t3: {
+					type: "booster",
+					timer: 0,
+					target: 600,
+				}
+			},
+			
+		}
+
+		var mainType =[
+			{
+
+				//classic
+				size: 150,
+				weight: 100,
+
+				statusDisplay: [
+					{
+						type: "fire",
+						duration: 0,
+					},
+					{
+						type: "stun",
+						duration: 0,
+					},
+					{
+						type: "vulnerable",
+						duration: 0,
+					},
+					{
+						type: "slow",
+						duration: 0,
+					},
+					{
+						type: "weak",
+						duration: 0,
+					},
+					{
+						type: "regen",
+						duration: 0,
+					},
+					{
+						type: "speed",
+						duration: 0,
+					},
+					{
+						type: "shield",
+						duration: 0,
+					},
+					{
+						type: "strong",
+						duration: 0,
+					},
+					{
+						type: "spike",
+						duration: 0,
+					},
+					{
+						type: "unspike",
+						duration: 0,
+					},
+				],
+
+
+				v: {
+					max: 30,
+					increase: 3,
+					stable: 1
+				},
+
+				attack: {
+					bodyDamage: 50,
+				
+					ammo: 30,
+					shots: 1,
+					atsp: 4,
+					reload: 45,
+					recoil: 1,
+
+					bullet: {
+						target: 1,
+						range: 5000,
+						weight: 1,
+						speed: 75,
+						explode: false,
+						dmg: 50,
+						regDmg: 50,
+						accuracy: 15,
+						size: 15,
+						visuals: {
+							color: '#aaaaaa',
+							borderWidth: 2,
+							border: '#000000',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+
+				hp: {
+					left: 1500,
+					max: 1500,
+					heal: 0.25,
+					shieldVal: 1,
+					bodyDmgShield: 1,
+				},
+
+				ability: {
+					heal: { 
+						firstTime: 0,
+						timer: 0,
+						target: 15,
+						slowdown: 0.75,
+						amount: 300,
+						regen: [{
+							type: null,
+							duration: null,
+							intensity: null
+						}]
+					},
+				},
+			}, 
+			{
+				//machine gun
+				size: 170,
+				weight: 200,
+
+				statusDisplay: [
+					{
+						type: "fire",
+						duration: 0,
+					},
+					{
+						type: "stun",
+						duration: 0,
+					},
+					{
+						type: "vulnerable",
+						duration: 0,
+					},
+					{
+						type: "slow",
+						duration: 0,
+					},
+					{
+						type: "weak",
+						duration: 0,
+					},
+					{
+						type: "regen",
+						duration: 0,
+					},
+					{
+						type: "speed",
+						duration: 0,
+					},
+					{
+						type: "shield",
+						duration: 0,
+					},
+					{
+						type: "strong",
+						duration: 0,
+					},
+					{
+						type: "spike",
+						duration: 0,
+					},
+					{
+						type: "unspike",
+						duration: 0,
+					},
+				],
+
+
+				v: {
+					max: 45,
+					increase: 1,
+					stable: 0.3
+				},
+
+				attack: {
+					bodyDamage: 100,
+				
+					ammo: 90,
+					shots: 1,
+					atsp: 2,
+					reload: 120,
+					recoil: 1,
+
+					bullet: {
+						target: 1,
+						range: 2000,
+						weight: 0.5,
+						speed: 75,
+						explode: false,
+						dmg: 40,
+						regDmg: 40,
+						accuracy: 100,
+						size: 15,
+						visuals: {
+							color: '#aaaaaa',
+							borderWidth: 2,
+							border: '#000000',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+
+				hp: {
+					left: 2500,
+					max: 2500,
+					heal: 0,
+					shieldVal: 0.9,
+					bodyDmgShield: 0.9,
+				},
+
+				ability: {
+					heal: { 
+						firstTime: 0,
+						timer: 0,
+						target: 40,
+						slowdown: 0.3,
+						amount: 100,
+						regen: [{
+							type: "regen",
+							duration: 100,
+							intensity: 2
+						}]
+					},
+				},
+			},
+			{
+				//shotgun
+				size: 140,
+				weight: 120,
+
+				statusDisplay: [
+					{
+						type: "fire",
+						duration: 0,
+					},
+					{
+						type: "stun",
+						duration: 0,
+					},
+					{
+						type: "vulnerable",
+						duration: 0,
+					},
+					{
+						type: "slow",
+						duration: 0,
+					},
+					{
+						type: "weak",
+						duration: 0,
+					},
+					{
+						type: "regen",
+						duration: 0,
+					},
+					{
+						type: "speed",
+						duration: 0,
+					},
+					{
+						type: "shield",
+						duration: 0,
+					},
+					{
+						type: "strong",
+						duration: 0,
+					},
+					{
+						type: "spike",
+						duration: 0,
+					},
+					{
+						type: "unspike",
+						duration: 0,
+					},
+				],
+
+
+				v: {
+					max: 45,
+					increase: 3,
+					stable: 1
+				},
+
+				attack: {
+					bodyDamage: 75,
+				
+					ammo: 2,
+					shots: 8,
+					atsp: 15,
+					reload: 30,
+					recoil: 0.5,
+
+					bullet: {
+						target: 1,
+						range: 1500,
+						weight: 1.2,
+						speed: 90,
+						explode: false,
+						dmg: 50,
+						regDmg: 50,
+						accuracy: 100,
+						size: 20,
+						visuals: {
+							color: '#aaaaaa',
+							borderWidth: 2,
+							border: '#000000',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+
+				hp: {
+					left: 1750,
+					max: 1750,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 0.6,
+				},
+
+				ability: {
+					heal: { 
+						firstTime: 0,
+						timer: 0,
+						target: 15,
+						slowdown: 0.75,
+						amount: 200,
+						regen: [{
+							type: "regen",
+							duration: 150,
+							intensity: 2
+						}]
+					},
+				},
+			},
+			{
+				//Healer
+				size: 120,
+				weight: 75,
+
+				statusDisplay: [
+					{
+						type: "fire",
+						duration: 0,
+					},
+					{
+						type: "stun",
+						duration: 0,
+					},
+					{
+						type: "vulnerable",
+						duration: 0,
+					},
+					{
+						type: "slow",
+						duration: 0,
+					},
+					{
+						type: "weak",
+						duration: 0,
+					},
+					{
+						type: "regen",
+						duration: 0,
+					},
+					{
+						type: "speed",
+						duration: 0,
+					},
+					{
+						type: "shield",
+						duration: 0,
+					},
+					{
+						type: "strong",
+						duration: 0,
+					},
+					{
+						type: "spike",
+						duration: 0,
+					},
+					{
+						type: "unspike",
+						duration: 0,
+					},
+				],
+
+
+				v: {
+					max: 30,
+					increase: 3,
+					stable: 1
+				},
+
+				attack: {
+					bodyDamage: 40,
+				
+					ammo: 25,
+					shots: 1,
+					atsp: 15,
+					reload: 45,
+					recoil: 0,
+
+					bullet: {
+						target: 1,
+						range: 2000,
+						weight: 1,
+						speed: 80,
+						explode: false,
+						dmg: 75,
+						regDmg: 75,
+						accuracy: 1,
+						size: 12,
+						visuals: {
+							color: '#aaaaaa',
+							borderWidth: 2,
+							border: '#000000',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+
+				hp: {
+					left: 2250,
+					max: 2250,
+					heal: 1,
+					shieldVal: 0.85,
+					bodyDmgShield: 0.85,
+				},
+
+				ability: {
+					heal: { 
+						firstTime: 0,
+						timer: 0,
+						target: 20,
+						slowdown: 0.85,
+						amount: 200,
+						regen: [{
+							type: "regen",
+							duration: 120,
+							intensity: 3
+						}]
+					},
+				},
+			},
+			{
+				//Assassin
+				size: 100,
+				weight: 75,
+
+				statusDisplay: [
+					{
+						type: "fire",
+						duration: 0,
+					},
+					{
+						type: "stun",
+						duration: 0,
+					},
+					{
+						type: "vulnerable",
+						duration: 0,
+					},
+					{
+						type: "slow",
+						duration: 0,
+					},
+					{
+						type: "weak",
+						duration: 0,
+					},
+					{
+						type: "regen",
+						duration: 0,
+					},
+					{
+						type: "speed",
+						duration: 0,
+					},
+					{
+						type: "shield",
+						duration: 0,
+					},
+					{
+						type: "strong",
+						duration: 0,
+					},
+					{
+						type: "spike",
+						duration: 0,
+					},
+					{
+						type: "unspike",
+						duration: 0,
+					},
+				],
+
+
+				v: {
+					max: 45,
+					increase: 5,
+					stable: 1.5
+				},
+
+				attack: {
+					bodyDamage: 30,
+				
+					ammo: 10,
+					shots: 1,
+					atsp: 15,
+					reload: 60,
+					recoil: 0,
+
+					bullet: {
+						target: 1,
+						range: 5000,
+						weight: 1.5,
+						speed: 100,
+						explode: false,
+						dmg: 120,
+						regDmg: 120,
+						accuracy: 5,
+						size: 12,
+						visuals: {
+							color: '#ffff99',
+							borderWidth: 2,
+							border: '#ffff00',
+						},
+						effects: [
+							{
+								type: "fire",
+								duration: 150,
+								intensity: 2,
+							},
+						]
+					},	
+				},
+
+				hp: {
+					left: 1250,
+					max: 1250,
+					heal: 0,
+					shieldVal: 1.1,
+					bodyDmgShield: 1.1,
+				},
+
+				ability: {
+					heal: { 
+						firstTime: 0,
+						timer: 0,
+						target: 30,
+						slowdown: 0.75,
+						amount: 150,
+						regen: [{
+							type: "regen",
+							duration: 120,
+							intensity: 2
+						}]
+					},
+				},
+			},
+			{
+				//Explosive
+				size: 165,
+				weight: 150,
+
+				statusDisplay: [
+					{
+						type: "fire",
+						duration: 0,
+					},
+					{
+						type: "stun",
+						duration: 0,
+					},
+					{
+						type: "vulnerable",
+						duration: 0,
+					},
+					{
+						type: "slow",
+						duration: 0,
+					},
+					{
+						type: "weak",
+						duration: 0,
+					},
+					{
+						type: "regen",
+						duration: 0,
+					},
+					{
+						type: "speed",
+						duration: 0,
+					},
+					{
+						type: "shield",
+						duration: 0,
+					},
+					{
+						type: "strong",
+						duration: 0,
+					},
+					{
+						type: "spike",
+						duration: 0,
+					},
+					{
+						type: "unspike",
+						duration: 0,
+					},
+				],
+
+
+				v: {
+					max: 30,
+					increase: 2,
+					stable: 0.5
+				},
+
+				attack: {
+					bodyDamage: 80,
+				
+					ammo: 10,
+					shots: 1,
+					atsp: 15,
+					reload: 30,
+					recoil: 1,
+
+					bullet: {
+						target: 1,
+						range: 2000,
+						weight: 1,
+						speed: 90,
+						explode: {
+							kb: 2,
+							radius: 200,
+						},
+						dmg: 90,
+						regDmg: 90,
+						accuracy: 30,
+						size: 20,
+						visuals: {
+							color: '#ff0000',
+							borderWidth: 8,
+							border: '#880000',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+
+				hp: {
+					left: 1800,
+					max: 1800,
+					heal: 0,
+					shieldVal: 0.9,
+					bodyDmgShield: 0.9,
+				},
+
+				ability: {
+					heal: { 
+						firstTime: 0,
+						timer: 0,
+						target: 30,
+						slowdown: 0.75,
+						amount: 150,
+						regen: [{
+							type: "regen",
+							duration: 120,
+							intensity: 2
+						}]
+					},
+				},
+			},
+		]
+		
+		var enemy = [
+			{
+				stage: 0,
+
+				x: 500,
+				y: 500,
+				
+
+				size: 120,
+				weight: 100,
+
+				status: [{
+					type: null,
+					duration: null,
+					intensity: null
+				},
+				],
+
+				stunned: 0,
+
+				t: {
+					x: 0,
+					y: 0,
+					spin: {
+						radius: 100,
+						v: 3,
+						pos: 0,
+					}
+					
+				},
+				
+				v: {
+					x: 0,
+					y: 0,
+					max: 30,
+					increase: 1,
+				},
+
+				attack: {
+					timer: 0,
+					bodyDamage: 0,
+					targeting: "ranged",
+					ammoLeft: 50,
+
+					range: 1000,
+					reload: 15,
+					atsp: 1,
+					ammo: 50,
+					shots: 4,
+					recoil: 0.1,
+					
+
+					bullet: {
+						target: 0,
+						accuracy: 120,
+						dmg: 20,
+						weight: 0,
+						speed: 40,
+						range: 2000,
+						size: 15,
+
+						explode: {
+							radius: 100,
+							kb: 1,
+						},
+						visuals: {
+							color: 'red',
+							borderWidth: 0,
+							border: 'red',
+						},
+						effects: []
+					},
+				},
+				
+				hp: {
+					left: 1500,
+					max: 1500,
+					heal: 0,
+					shieldVal: 0.75,
+					bodyDmgShield: 1,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{	
+							type: "center",
+							name: null,
+						}
+					],
+				},
+				onDeath: {
+					type: "explode",
+					dmg: 100,
+					radius: 100,
+					kb: 1,
+					size: 100,
+					effects: []
+				},
+				statusDisplay: [
+				{
+					type: "fire",
+					duration: 0,
+				},
+				{
+					type: "stun",
+					duration: 0,
+				},
+				{
+					type: "vulnerable",
+					duration: 0,
+				},
+				{
+					type: "slow",
+					duration: 0,
+				},
+				{
+					type: "weak",
+					duration: 0,
+				},
+			],
+				
+			},
+		]
+		
+		var keys = {
+			w: 0,
+			a: 0,
+			s: 0,
+			d: 0,
+			e: 0,
+			r: 0,
+			f: 0,
+			q: 0,
+			n1: 0,
+			n2: 0,
+			n3: 0,
+			mouse: 0,
+			bs: 0,
+		}
+		
+		var boxSize = {
+			w: 4000,
+			h: 2000
+		} //make smaller to about 2000, 1200, might have to change minimap
+		
+		var bullet = [
+			{
+				fly: false,
+				x: 0,
+				y: 0,
+				vx: 0,
+				vy: 0,
+				dmg: 0,
+				target: 0,
+				size: 0,
+				range: 0,
+				weight: 0,
+				travel: 0,
+				
+				explosive: false,
+				effects: [],
+
+				visuals: {
+					color: "",
+					border: "",
+					borderWidth: 0,
+				}
+			}
+		]
+		
+		var explosion = [
+			{
+				exp: false,
+				x: 0,
+				y: 0,
+				radius: 0,
+				timer: 0,
+				dmg: 0,
+				kb: 0,
+				effects: [null, null]
+			}
+		]
+
+		var enemyTypes = [
+			//spin 1
+			{
+				//spin 1
+				rarity: 1,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 120,
+				weight: 75,
+				t: {
+					spin: {
+						radius: 70,
+						v: 2,
+					}
+				},
+				
+				v: {
+					max: 30,
+					increase: 1.5,
+				},
+
+				attack: {
+					bodyDamage: 40,
+					targeting: "spin",
+
+					range: null,
+					reload: null,
+					atsp: null,
+					ammo: null,
+					shots: null,
+					recoil: null,
+					
+
+					bullet: {
+						target: 1,
+						range: 2000,
+						weight: 1,
+						speed: 50,
+						explode: false,
+						dmg: 50,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#000000',
+							borderWidth: 2,
+							border: 'blue',
+						},
+						effects: [
+							{
+								type: "regen",
+								duration: 1,
+								intensity: 1,
+							},
+						]
+					},
+				},
+				
+				hp: {
+					max: 80,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 0.5,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: spinEnemyAsset[0],
+						}
+					],
+				},
+				onDeath: null
+			}, 
+			//spin2
+			{
+				rarity: 0.75,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 140,
+				weight: 120,
+				t: {
+					spin: {
+						radius: 80,
+						v: 4,
+					}
+				},
+				
+				v: {
+					max: 40,
+					increase: 2,
+				},
+
+				attack: {
+					bodyDamage: 60,
+					targeting: "spin",
+
+					range: null,
+					reload: null,
+					atsp: null,
+					ammo: null,
+					shots: null,
+					recoil: null,
+					
+
+					bullet: {
+						target: 1,
+						range: 2000,
+						weight: 1,
+						speed: 50,
+						explode: false,
+						dmg: 50,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#000000',
+							borderWidth: 2,
+							border: 'blue',
+						},
+						effects: [
+							{
+								type: "regen",
+								duration: 1,
+								intensity: 1,
+							},
+						]
+					},
+				},
+				
+				hp: {
+					max: 190,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 0.5,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: "",
+						}
+					],
+				},
+
+				onDeath: null
+			}, 
+			//spin3
+			{
+				//spin 3
+				
+				rarity: 0.2,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 180,
+				weight: 175,
+				t: {
+					spin: {
+						radius: 150,
+						v: 3,
+					}
+				},
+				
+				v: {
+					max: 30,
+					increase: 1,
+				},
+
+				attack: {
+					bodyDamage: 100,
+					targeting: "spin",
+
+					range: null,
+					reload: null,
+					atsp: null,
+					ammo: null,
+					shots: null,
+					recoil: null,
+					
+
+					bullet: {
+						target: 1,
+						range: 2000,
+						weight: 1,
+						speed: 50,
+						explode: false,
+						dmg: 50,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#000000',
+							borderWidth: 2,
+							border: 'blue',
+						},
+						effects: [
+							{
+								type: "regen",
+								duration: 1,
+								intensity: 1,
+							},
+						]
+					},
+				},
+				
+				hp: {
+					max: 300,
+					heal: 1,
+					shieldVal: 0.9,
+					bodyDmgShield: 0.25,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: spinEnemyAsset[2],
+						}
+					],
+				},
+
+				onDeath: {
+					type: "explode",
+					dmg: 200,
+					radius: 200,
+					kb: 1,
+					size: 100,
+					effects: []
+				}
+			}, 
+			//regular
+			{
+				//regular turret
+				
+				rarity: 1,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 120,
+				weight: 80,
+				t: {
+					spin: {
+						radius: 400,
+						v: 3,
+					}
+				},
+				
+				v: {
+					max: 40,
+					increase: 2,
+				},
+
+				attack: {
+					timer: 0,
+					bodyDamage: 50,
+					ammoLeft: 6,
+					targeting: "ranged",
+
+					range: 1500,
+					ammo: 6,
+					shots: 1,
+					atsp: 10,
+					reload: 30,
+					recoil: 0,
+
+					bullet: {
+						target: 0,
+						range: 2000,
+						weight: 1,
+						speed: 75,
+						explode: false,
+						dmg: 30,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#cccccc',
+							borderWidth: 2,
+							border: '#888888',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+				
+				hp: {
+					max: 150,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 1,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: "",
+						},
+						{
+							type: "barrel",
+							name: "",
+							w: 1,
+							h: 1,
+						}
+					],
+				},
+
+				onDeath: null
+			}, 
+			//machine gun
+			{
+				rarity: 0.2,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 150,
+				weight: 150,
+				t: {
+					spin: {
+						radius: 400,
+						v: 2,
+					}
+				},
+				
+				v: {
+					max: 25,
+					increase: 1.5,
+				},
+
+				attack: {
+					timer: 0,
+					bodyDamage: 100,
+					ammoLeft: 15,
+					targeting: "ranged",
+
+					range: 1500,
+					ammo: 15,
+					shots: 1,
+					atsp: 2,
+					reload: 30,
+					recoil: 1,
+
+					bullet: {
+						target: 0,
+						range: 2000,
+						weight: 1,
+						speed: 75,
+						explode: false,
+						dmg: 40,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#aaaaaa',
+							borderWidth: 2,
+							border: '#000000',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+				
+				hp: {
+					max: 500,
+					heal: 0,
+					shieldVal: 0.9,
+					bodyDmgShield: 0.9,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: "",
+						},
+						{
+							type: "barrel",
+							name: "",
+							w: 1,
+							h: 1,
+						}
+					],
+				},
+
+				onDeath: null
+			},
+			//shotgun
+			{
+				rarity: 1,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 120,
+				weight: 100,
+				t: {
+					spin: {
+						radius: 300,
+						v: 3,
+					}
+				},
+				
+				v: {
+					max: 40,
+					increase: 2,
+				},
+
+				attack: {
+					timer: 0,
+					bodyDamage: 50,
+					ammoLeft: 2,
+					targeting: "ranged",
+
+					range: 1000,
+					ammo: 2,
+					shots: 5,
+					atsp: 15,
+					reload: 30,
+					recoil: 1,
+
+					bullet: {
+						target: 0,
+						range: 1000,
+						weight: 1,
+						speed: 50,
+						explode: false,
+						dmg: 30,
+						accuracy: 250,
+						size: 15,
+						visuals: {
+							color: '#aaaaaa',
+							borderWidth: 2,
+							border: '#000000',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+				
+				hp: {
+					max: 150,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 1,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: "",
+						},
+						{
+							type: "barrel",
+							name: "",
+							w: 1,
+							h: 1,
+						}
+					],
+				},
+
+				onDeath: null
+			},
+			//explosive
+			{
+				rarity: 0.2,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 150,
+				weight: 200,
+				t: {
+					spin: {
+						radius: 400,
+						v: 1,
+					}
+				},
+				
+				v: {
+					max: 15,
+					increase: 1,
+				},
+
+				attack: {
+					timer: 0,
+					bodyDamage: 100,
+					ammoLeft: 1,
+					targeting: "ranged",
+
+					range: 1500,
+					ammo: 1,
+					shots: 1,
+					atsp: 1,
+					reload: 45,
+					recoil: 0,
+
+					bullet: {
+						target: 0,
+						range: 2000,
+						weight: 1,
+						speed: 75,
+						explode: {
+							radius: 200,
+							kb: 1.5,
+						},
+						dmg: 200,
+						accuracy: 50,
+						size: 20,
+						visuals: {
+							color: '#ff0000',
+							borderWidth: 4,
+							border: '#aa0000',
+						},
+						effects: [
+							{
+								type: "slow",
+								duration: 45,
+								intensity: 0.8,
+							},
+						]
+					},	
+				},
+				
+				hp: {
+					max: 500,
+					heal: 0,
+					shieldVal: 0.9,
+					bodyDmgShield: 0.9,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: "",
+						},
+						{
+							type: "barrel",
+							name: "",
+							w: 1,
+							h: 1,
+						}
+					],
+				},
+
+				onDeath: { // remove later
+					type: "explode",
+					dmg: 200,
+					radius: 200,
+					kb: 2,
+					size: 200,
+					effects: []
+				}
+			},
+
+			//shielder
+			{
+				//buff shield
+				rarity: 0.3,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 100,
+				weight: 80,
+				t: {
+					spin: {
+						radius: 300,
+						v: 3,
+					}
+				},
+				
+				v: {
+					max: 40,
+					increase: 2,
+				},
+
+				attack: {
+					timer: 0,
+					bodyDamage: 50,
+					ammoLeft: 15,
+					targeting: "buff",
+
+					range: 400,
+					ammo: 15,
+					shots: 1,
+					atsp: 15,
+					reload: 30,
+					recoil: 0,
+
+					bullet: {
+						target: 0,
+						range: 2000,
+						weight: 1,
+						speed: 50,
+						explode: false,
+						dmg: 50,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#000000',
+							borderWidth: 2,
+							border: 'blue',
+						},
+						effects: [
+							{
+								type: "shield",
+								duration: 1,
+								intensity: 0.8,
+							},
+						]
+					},	
+				},
+				
+				hp: {
+					max: 100,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 1,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: "",
+						},
+						{
+							type: "range",
+							name: "",
+						},
+					],
+				},
+
+				onDeath: null
+			}, 
+
+			//healer
+			{
+				//buff
+				rarity: 0.3,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 100,
+				weight: 80,
+				t: {
+					spin: {
+						radius: 300,
+						v: 3,
+					}
+				},
+				
+				v: {
+					max: 40,
+					increase: 2,
+				},
+
+				attack: {
+					timer: 0,
+					bodyDamage: 50,
+					ammoLeft: 15,
+					targeting: "buff",
+
+					range: 400,
+					ammo: 15,
+					shots: 1,
+					atsp: 15,
+					reload: 30,
+					recoil: 0,
+
+					bullet: {
+						target: 0,
+						range: 2000,
+						weight: 1,
+						speed: 50,
+						explode: false,
+						dmg: 50,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#000000',
+							borderWidth: 2,
+							border: 'blue',
+						},
+						effects: [
+							{
+								type: "regen",
+								duration: 1,
+								intensity: 2,
+							},
+						]
+					},	
+				},
+				
+				hp: {
+					max: 100,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 1,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: "",
+						},
+						{
+							type: "range",
+							name: "",
+						},
+					],
+				},
+
+				onDeath: null
+			},
+
+			//strength
+			{
+				//buff
+				rarity: 0.3,
+				rngVal: 0, //DONT CHANGE THIS
+
+				size: 100,
+				weight: 80,
+				t: {
+					spin: {
+						radius: 300,
+						v: 3,
+					}
+				},
+				
+				v: {
+					max: 40,
+					increase: 2,
+				},
+
+				attack: {
+					timer: 0,
+					bodyDamage: 50,
+					ammoLeft: 15,
+					targeting: "buff",
+
+					range: 400,
+					ammo: 15,
+					shots: 1,
+					atsp: 15,
+					reload: 30,
+					recoil: 0,
+
+					bullet: {
+						target: 0,
+						range: 2000,
+						weight: 1,
+						speed: 50,
+						explode: false,
+						dmg: 50,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#000000',
+							borderWidth: 2,
+							border: 'blue',
+						},
+						effects: [
+							{
+								type: "strong",
+								duration: 1,
+								intensity: 1.2,
+							},
+							{
+								type: "spike",
+								duration: 1,
+								intensity: 1.2,
+							},
+						]
+					},	
+				},
+				
+				hp: {
+					max: 100,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 1,
+				},
+
+				visuals: {
+					rotate: 0,
+					timer: 0,
+					timt: 255,
+					imgSet: [
+						{
+							type: "center",
+							name: "",
+						},
+						{
+							type: "range",
+							name: "",
+						},
+					],
+				},
+
+				onDeath: null
+			},
+		]
+
+		var fireball = {
+			recoil: 1,
+			target: 1,
+			range: 2000,
+			weight: 1,
+			speed: 75,
+			explode: {
+				radius: 200,
+				kb: 0.5,
+			},
+			dmg: 310,
+			accuracy: 20,
+			size: 20,
+			visuals: {
+				color: '#000000',
+				borderWidth: 2,
+				border: '#ff0000',
+			},
+			effects: [
+				{
+					type: null,
+					duration: null,
+					intensity: null,
+				},
+			]
+		}
+
+		var banish = {
+			recoil: 3,
+			target: 1,
+			range: 3000,
+			weight: 25,
+			speed: 80,
+			explode: false,
+			dmg: 40,
+			accuracy: 10,
+			size: 25,
+			visuals: {
+				color: '#000000',
+				borderWidth: 5,
+				border: '#ff00ff',
+			},
+			effects: [
+				{
+					type: "slow",
+					duration: 120,
+					intensity: 0.5,
+				},
+			]
+		}
+
+		var bulletWave = {
+			recoil: 0,
+			target: 1,
+			range: 2000,
+			weight: 1,
+			speed: 80,
+			explode: false,
+			dmg: 50,
+			accuracy: 0,
+			size: 20,
+			visuals: {
+				color: '#00ff00',
+				borderWidth: 3,
+				border: '#aaaaaa',
+			},
+			effects: [
+				{
+					type: null,
+					duration: null,
+					intensity: null,
+				},
+			]
+		}
+
+		var burst = {
+			recoil: 0.5,
+			target: 1,
+			range: 3000,
+			weight: 0.5,
+			speed: 75,
+			explode: false,
+			dmg: 30,
+			accuracy: 50,
+			size: 20,
+			visuals: {
+				color: '#7777ff',
+				borderWidth: 5,
+				border: '#ffffff',
+			},
+			effects: [
+				{
+					type: "slow",
+					duration: 90,
+					intensity: 0.5,
+				},
+			]
+		}
+
+		var nova = {
+			recoil: 0,
+			target: 1,
+			range: 4000,
+			weight: 1,
+			speed: 75,
+			explode: {
+				radius: 200,
+				kb: 0.75,
+			},
+			dmg: 200,
+			accuracy: 0,
+			size: 25,
+			visuals: {
+				color: '#ff0000',
+				borderWidth: 5,
+				border: '#000000',
+			},
+			effects: [
+				{
+					type: null,
+					duration: null,
+					intensity: null,
+				},
+			]
+		}
+
+		var instaKill = {
+			recoil: 0,
+			target: 1,
+			range: 4000,
+			weight: 0.1,
+			speed: 90,
+			explode: false,
+			dmg: 9999,
+			accuracy: 0,
+			size: 10,
+			visuals: {
+				color: '#ffff00',
+				borderWidth: 5,
+				border: '#ffffff',
+			},
+			effects: [
+				{
+					type: null,
+					duration: null,
+					intensity: null,
+				},
+			]
+		}
+
+		var superBullet = {
+			recoil: 2,
+			target: 1,
+			range: 4000,
+			weight: 10,
+			speed: 70,
+			explode: false,
+			dmg: 100,
+			accuracy: 0,
+			size: 40,
+			visuals: {
+				color: '#ff0000',
+				borderWidth: 5,
+				border: '#aaaaaa',
+			},
+			effects: [
+				{
+					type: "stun",
+					duration: 60,
+					intensity: null,
+				},
+			]
+		}
+
+		var fastFire = {
+			recoil: 1,
+			target: 1,
+			range: 2000,
+			weight: 1,
+			speed: 80,
+			explode: {
+				radius: 250,
+				kb: 2,
+			},
+			dmg: 0,
+			accuracy: 10,
+			size: 25,
+			visuals: {
+				color: '#ff0000',
+				borderWidth: 5,
+				border: '#0000ff',
+			},
+			effects: [
+				{
+					type: "fire",
+					duration: 600,
+					intensity: 4,
+				},
+				{
+					type: "speed",
+					duration: 350,
+					intensity: 1.5,
+				},
+				{
+					type: "strong",
+					duration: 350,
+					intensity: 1.5,
+				},
+				{
+					type: "spike",
+					duration: 350,
+					intensity: 1.5,
+				},
+			]
+		}
+
+		var debuff = {
+			recoil: 1,
+			target: 1,
+			range: 2000,
+			weight: 1,
+			speed: 80,
+			explode: {
+				radius: 200,
+				kb: 0.2,
+			},
+			dmg: 0,
+			accuracy: 10,
+			size: 25,
+			visuals: {
+				color: '#00ff00',
+				borderWidth: 5,
+				border: '#aaaaff',
+			},
+			effects: [
+				{
+					type: "vulnerable",
+					duration: 150,
+					intensity: 3,
+				},
+				{
+					type: "slow",
+					duration: 150,
+					intensity: 0.3,
+				},
+				{
+					type: "weak",
+					duration: 150,
+					intensity: 0.2,
+				},
+				{
+					type: "unspike",
+					duration: 150,
+					intensity: 0.2,
+				},
+			]
+		}
+
+		var stunBomb = {
+			recoil: 1,
+			target: 1,
+			range: 2500,
+			weight: 1,
+			speed: 75,
+			explode: {
+				radius: 200,
+				kb: 1.5,
+			},
+			dmg: 50,
+			accuracy: 10,
+			size: 25,
+			visuals: {
+				color: '#ffffff',
+				borderWidth: 5,
+				border: '#ffff00',
+			},
+			effects: [
+				{
+					type: "stun",
+					duration: 120,
+					intensity: null,
+				},
+				{
+					type: "slow",
+					duration: 180,
+					intensity: 0.75,
+				},
+				{
+					type: "vulnerable",
+					duration: 120,
+					intensity: 1.5,
+				},
+			]
+		}
+
+		var rocket = {
+			recoil: 1,
+			target: 1,
+			range: 2000,
+			weight: 1,
+			speed: 75,
+			explode: {
+				radius: 200,
+				kb: 0.5,
+			},
+			dmg: 40,
+			accuracy: 100,
+			size: 15,
+			visuals: {
+				color: '#ff0000',
+				borderWidth: 5,
+				border: '#ffff00',
+			},
+			effects: [
+				{
+					type: null,
+					duration: null,
+					intensity: null,
+				},
+			]
+		}
+
+		var poisonWave = {
+			recoil: 1,
+			target: 1,
+			range: 3000,
+			weight: 2,
+			speed: 80,
+			explode: false,
+			dmg: 10,
+			accuracy: 0,
+			size: 25,
+			visuals: {
+				color: '#00aa00',
+				borderWidth: 5,
+				border: '#003300',
+			},
+			effects: [
+				{
+					type: "fire",
+					duration: 210,
+					intensity: 3,
+				},
+				{
+					type: "slow",
+					duration: 120,
+					intensity: 0.8,
+				},
+			]
+		}
+
+		var power = {
+			recoil: 1,
+			target: 1,
+			range: 1000,
+			weight: 1,
+			speed: 50,
+			explode: {
+				radius: 200,
+				kb: 1,
+			},
+			dmg: 300,
+			accuracy: 100,
+			size: 15,
+			visuals: {
+				color: '#ff0000',
+				borderWidth: 5,
+				border: '#ffff00',
+			},
+			effects: [
+				{
+					type: "regen",
+					duration: 600,
+					intensity: 0.5,
+				},
+				{
+					type: "speed",
+					duration: 160,
+					intensity: 1.3,
+				},
+				{
+					type: "spike",
+					duration: 160,
+					intensity: 1.5,
+				},
+				{
+					type: "strong",
+					duration: 160,
+					intensity: 1.5,
+				},
+				{
+					type: "shield",
+					duration: 160,
+					intensity: 0.5,
+				},
+			]
+		}
+
+		var screenRatio
+
+		
+
+		var enemyBase
+
+		var healSymbol
+
+		var ammoSymbol
+
+		var selectedClass = 0
+
+		var effectSymbol = []
+
+		var classSymbol = []
+
+		var burstContinue = {
+			value: 0,
+			timer: 0,
+			target: 45,
+		}
+
+		var novaContinue = {
+			value: 0,
+			timer: 0,
+			target: 70,
+		}
+
+		var tStrikeContinue = {
+			value: 0,
+			timer: 0,
+			target: 31,
+		}
+
+		var banishContinue = {
+			value: 0,
+			timer: 0,
+			target: 30,
+		}
+
+		var rocketStormContinue = {
+			value: 0,
+			timer: 0,
+			target: 30,
+		}
+
+		var stage = -1
+
+		var startingSelection = 0
+
+		var startScreenAsset = []
+
+
+		var selectedAbility = [0,0,0]
+
+		var abilitySymbol = [[], [], []]
+
+		var mainImgSet = [
+			{
+				type: "center",
+				name: "",
+			},
+			{
+				type: "barrel",
+				name: "",
+				w: 1,
+				h: 1,
+			}
+		]
+
+		var mainClassImg = []
+
+		var stanardBarrel
+
+		var explosiveBarrel
+
+		var shotgunBarrel
+
+		var machineBarrel
+
+		var stanardBase
+		
+		var explosiveBase
+
+		var shotgunBase
+
+		var machineBase
+
+		var healerImg
+
+		var strongerImg
+
+		var shielderImg
+
+		var difficulty = 0
+
+		var endless = 0
+
+		var ramping = 0
+
+		var rampAmount = 0
+
+		var timeBetween = 0
+
+		var spawnTimeout
+
+		var endScreenAsset = []
+
+		var checkmarks
+
+		var timingTimer = 0
+
+		var waitTimer = 0
+
+		var pauseScreenImg
+
+		var dificultySymbol = []
+
+		var rangeShower = []
+
+		var animatingFrames = 0
+
+		function preload () {
+			explosionFrames = [loadImage ("https://i.ibb.co/PTbzJGh/EX1.png"), loadImage ("https://i.ibb.co/pX5ZCGC/EX2.png"), loadImage ("https://i.ibb.co/1zR9vTT/EX3.png"),loadImage ("https://i.ibb.co/16h7MWQ/EX4.png"),loadImage ("https://i.ibb.co/MSYwKk7/EX5.png"),loadImage ("https://i.ibb.co/wd9PN6w/EX6.png")]
+
+
+			spinEnemyAsset = [loadImage("https://i.ibb.co/4WLDkgV/Asset-74.png"), loadImage ("https://i.ibb.co/12LJ56w/Asset-75.png"), loadImage ("https://i.ibb.co/MhzmpH6/Asset-76.png")]
+
+			backgroundImg = loadImage ("https://i.ibb.co/sHHM9mC/bf-SUOHuihfs-O.png")
+
+			
+
+			//enemyBase = loadImage ("https://i.ibb.co/CsgSq1D/enemy-Center.png")
+
+			healSymbol = loadImage ("https://i.ibb.co/b3N72pn/Asset-101.png")
+
+			ammoSymbol = loadImage ("https://i.ibb.co/CswtcPh/Ammo.png")
+
+			startScreenAsset = [loadImage ("https://i.ibb.co/GsQzk7n/Asset-32.png"), "error",  loadImage ("https://i.ibb.co/QpdXjrg/Asset-36.png"), loadImage ("https://i.ibb.co/CJMvdCP/Asset-33.png"), loadImage ("https://i.ibb.co/JH2177y/Asset-35.png")]
+
+			abilitySymbol = [[loadImage ("https://i.ibb.co/tBXHLgQ/Asset-46.png"), loadImage ("https://i.ibb.co/kKQBXLZ/Asset-49.png"), loadImage ("https://i.ibb.co/Wz2f35g/Asset-48.png"), loadImage ("https://i.ibb.co/28rRyD0/Asset-51.png"), loadImage ("https://i.ibb.co/2v0M0zN/anything4-16.png"), loadImage ("https://i.ibb.co/XYb2776/Asset-50.png")],
+			 [loadImage ("https://i.ibb.co/j6jpGKS/Asset-53.png"), loadImage ("https://i.ibb.co/DWkRnP3/Asset-55.png"), loadImage ("https://i.ibb.co/b2Gj7Qm/Asset-58.png"), loadImage ("https://i.ibb.co/f9kSq2n/Asset-54.png"), loadImage ("https://i.ibb.co/DYWL5Vx/Asset-56.png"), loadImage ("https://i.ibb.co/LhtYSNT/Asset-57.png")], 
+			 [loadImage ("https://i.ibb.co/YbzzKpY/Asset-59.png"), loadImage ("https://i.ibb.co/pzMtNg3/anything4-17.png"), loadImage ("https://i.ibb.co/gMSKrpq/Asset-63.png"), loadImage ("https://i.ibb.co/FxKTt1S/Asset-64.png"), loadImage ("https://i.ibb.co/r32Z5cp/Asset-62.png"), loadImage ("https://i.ibb.co/vL9Hg33/Asset-61.png")]]
+
+			classSymbol = [loadImage ("https://i.ibb.co/4fkP50V/Asset-107.png"), loadImage ("https://i.ibb.co/z8vTC8H/Asset-108.png"), loadImage ("https://i.ibb.co/jgGdpH1/Asset-109.png"), loadImage ("https://i.ibb.co/TYR7ZSR/Asset-112.png"), loadImage ("https://i.ibb.co/bKckFbG/Asset-111.png"), loadImage ("https://i.ibb.co/P4wMKNn/Asset-110.png")]
+
+			effectSymbol = [loadImage ("https://i.ibb.co/MSCfBvX/Asset-89.png"), loadImage ("https://i.ibb.co/tPxKM39/Asset-90.png"), loadImage ("https://i.ibb.co/hg4kvTw/Asset-91.png"), loadImage ("https://i.ibb.co/c8Yvb9S/Asset-92.png"), loadImage ("https://i.ibb.co/sWPbdDQ/Asset-93.png"), loadImage ("https://i.ibb.co/hYrxzdj/Asset-94.png"), loadImage ("https://i.ibb.co/9vx9WT0/Asset-95.png"), loadImage ("https://i.ibb.co/jMy7JHy/Asset-96.png"), loadImage ("https://i.ibb.co/jLc027W/Asset-97.png"), loadImage ("https://i.ibb.co/kKPWJBT/Asset-98.png"), loadImage ("https://i.ibb.co/tHNdyd1/Asset-99.png")]
+
+			mainClassImg = [loadImage ("https://i.ibb.co/F7g2cCw/Asset-66.png"), loadImage ("https://i.ibb.co/82csCxK/Asset-70.png"), loadImage ("https://i.ibb.co/BZpWQt3/Asset-73.png"), loadImage ("https://i.ibb.co/N9Kmyd8/Asset-71.png"), loadImage ("https://i.ibb.co/strL7Tq/Asset-72.png"),loadImage ("https://i.ibb.co/Sfpq9v7/Asset-69.png")]
+
+			mainImgSet[0].name = loadImage ("https://i.ibb.co/JmT3xH5/Asset-67.png")
+			mainImgSet[1].name = mainClassImg [0]
+
+			stanardBarrel = loadImage ("https://i.ibb.co/yfxyPbG/Asset-85.png")
+
+			machineBarrel = loadImage ("https://i.ibb.co/XJBwB3j/Asset-88.png")
+
+			shotgunBarrel = loadImage ("https://i.ibb.co/9hZP83c/Asset-87.png")
+
+			explosiveBarrel = loadImage ("https://i.ibb.co/98WfzRW/Asset-86.png")
+
+			standardBase = loadImage ("https://i.ibb.co/qpygYKr/Asset-77.png")
+
+			machineBase = loadImage ("https://i.ibb.co/rQqn2Xm/Asset-80.png")
+
+			shotgunBase = loadImage ("https://i.ibb.co/7vMTXKH/Asset-79.png")
+
+			explosiveBase = loadImage ("https://i.ibb.co/3pBxy3D/Asset-78.png")
+
+			healerImg = loadImage ("https://i.ibb.co/4PNt92q/Asset-104.png")
+
+			strongerImg = loadImage ("https://i.ibb.co/7r00Q64/Asset-103.png")
+
+			shielderImg = loadImage ("https://i.ibb.co/dp6PWhn/Asset-102.png")
+
+			endScreenAsset = loadImage ("https://i.ibb.co/sg084CN/Asset-105.png")
+
+			pauseScreenImg = loadImage ("https://i.ibb.co/QvdHdWZ/Asset-106.png")
+
+			checkmarks = [loadImage ("https://i.ibb.co/rkZLrnf/Asset-37.png"), loadImage ("https://i.ibb.co/0Bj8Wd7/Asset-38.png")]
+
+			rangeShower = [loadImage ("https://i.ibb.co/SyF9wmW/anything4-Recovered-20.png"), loadImage ("https://i.ibb.co/s9KXth5/anything4-Recovered-22.png"), loadImage ("https://i.ibb.co/5WjGf4M/anything4-Recovered-21.png")]
+
+			dificultySymbol = [
+			[
+				[loadImage ("https://i.ibb.co/vPCR0Hy/Asset-113.png"),loadImage ("https://i.ibb.co/3pVNcN9/Asset-114.png"), loadImage ("https://i.ibb.co/zXd86GZ/Asset-115.png"),loadImage ("https://i.ibb.co/FYkjH1r/Asset-116.png")],
+				[loadImage ("https://i.ibb.co/vsMFk10/Asset-117.png"),loadImage ("https://i.ibb.co/YDCmDsp/Asset-118.png"), loadImage ("https://i.ibb.co/FDL6HNS/Asset-119.png"),loadImage ("https://i.ibb.co/1zQMNn3/Asset-120.png")],
+				[loadImage ("https://i.ibb.co/t4HBkjS/Asset-121.png"),loadImage ("https://i.ibb.co/7zqjpR9/Asset-122.png"), loadImage ("https://i.ibb.co/WWMP9KN/Asset-123.png"),loadImage ("https://i.ibb.co/K6KpLJX/Asset-124.png")],
+				[loadImage ("https://i.ibb.co/HFBdd3T/Asset-125.png"),loadImage ("https://i.ibb.co/4Y2CnBQ/Asset-126.png"), loadImage ("https://i.ibb.co/44j24W2/Asset-127.png"),loadImage ("https://i.ibb.co/GCjf5LN/Asset-128.png")]
+			],
+			[
+				[loadImage ("https://i.ibb.co/QJmH5jg/Asset-129.png"),loadImage ("https://i.ibb.co/4Szkmff/Asset-130.png"), loadImage ("https://i.ibb.co/z6LVXZ0/Asset-131.png"),loadImage ("https://i.ibb.co/DtbJdsS/Asset-132.png")],
+				[loadImage ("https://i.ibb.co/JdJj8dS/Asset-133.png"),loadImage ("https://i.ibb.co/ZGJLJ1v/Asset-134.png"), loadImage ("https://i.ibb.co/gymk5CR/Asset-135.png"),loadImage ("https://i.ibb.co/HKBDqLL/Asset-136.png")],
+				[loadImage ("https://i.ibb.co/BVkFxX1/Asset-137.png"),loadImage ("https://i.ibb.co/QCzkDnW/Asset-138.png"), loadImage ("https://i.ibb.co/zVbG0nJ/Asset-139.png"),loadImage ("https://i.ibb.co/BGsP4sw/Asset-140.png")],
+				[loadImage ("https://i.ibb.co/d7wMYtm/Asset-141.png"),loadImage ("https://i.ibb.co/Qd5cxtD/Asset-142.png"), loadImage ("https://i.ibb.co/LYtmf3h/Asset-143.png"),loadImage ("https://i.ibb.co/pwsBWMc/Asset-144.png")]
+			],
+			]
+		}
+
+		//void setup
+		function setup () {
+
+			imageMode(CENTER)
+			textAlign (CENTER)
+			createCanvas(screen.width, screen.height)
+			frameRate(30)
+
+			var total = 0
+
+			for (i = 0; i<enemyTypes.length; i++){
+				total += enemyTypes[i].rarity
+			}
+
+			for (i = 0; i<enemyTypes.length; i++){
+				enemyTypes[i].rngVal = enemyTypes[i].rarity/total
+			}
+			screenRatio = boxSize.w/(boxSize.h+boxSize.w)
+
+			enemyTypes[0].visuals.imgSet[0].name = spinEnemyAsset[0]
+			enemyTypes[1].visuals.imgSet[0].name = spinEnemyAsset[1]
+			enemyTypes[2].visuals.imgSet[0].name = spinEnemyAsset[2]
+
+			enemyTypes[3].visuals.imgSet[0].name = standardBase
+			enemyTypes[3].visuals.imgSet[1].name = stanardBarrel
+
+			enemyTypes[4].visuals.imgSet[0].name = machineBase
+			enemyTypes[4].visuals.imgSet[1].name = machineBarrel
+
+			enemyTypes[5].visuals.imgSet[0].name = shotgunBase
+			enemyTypes[5].visuals.imgSet[1].name = shotgunBarrel
+
+			enemyTypes[6].visuals.imgSet[0].name = explosiveBase
+			enemyTypes[6].visuals.imgSet[1].name = explosiveBarrel
+
+			enemyTypes[7].visuals.imgSet[0].name = shielderImg
+
+			enemyTypes[8].visuals.imgSet[0].name = healerImg
+
+			enemyTypes[9].visuals.imgSet[0].name = strongerImg
+
+			enemyTypes[7].visuals.imgSet[1].name = rangeShower[0]
+
+			enemyTypes[8].visuals.imgSet[1].name = rangeShower[1]
+
+			enemyTypes[9].visuals.imgSet[1].name = rangeShower[2]
+
+
+			//enemyCall()
+
+			//enemyCall()
+
+			//enemyCall()
+		}
+		
+
+		//void draw
+		function draw() {
+
+			background(214)
+			cursor("initial")
+			textFont ("Arial Rounded MT Bold")
+			reScreen ()
+			
+			if (stage == -1) {
+				text ("browsers requires you to click the screen before allowing full screen", 100, 100)
+				if (keys.mouse == 1) {
+					document.getElementsByTagName("body")[0].children[1].requestFullscreen()
+					stage = 0
+					keys.mouse = 0
+				}
+			}
+
+			if (stage == 0) {
+				if (startingSelection == 0) {
+					image (startScreenAsset[0], scaler(720), yPos(450), screen.width, scaler(900))
+
+					switch (selectedClass) {
+						case 0:
+							mainImgSet[1].name = mainClassImg [0]
+							break;
+						case 1:
+							mainImgSet[1].name = mainClassImg [1]
+							break;
+						case 2:
+							mainImgSet[1].name = mainClassImg [2]
+							break;
+						case 3:
+							mainImgSet[1].name = mainClassImg [3]
+							break;
+						case 4:
+							mainImgSet[1].name = mainClassImg [4]
+							break;
+						case 5:
+							mainImgSet[1].name = mainClassImg [5]
+							break;
+					}
+
+					mainAssign (selectedClass)
+					
+					button (scaler (340), yPos(444), scaler(220),scaler(71), function () {startingSelection = 1; keys.bs = 0; keys.mouse = 0})
+					button (scaler (610), yPos(444), scaler(220),scaler(71), function () {startingSelection = 2; keys.bs = 0; keys.mouse = 0})
+					button (scaler (890), yPos(444), scaler(220),scaler(71), function () {startingSelection = 3; keys.bs = 0; keys.mouse = 0})
+
+					button (scaler (542), yPos(592), scaler(350),scaler(95), function () {stage = 1; keys.mouse = 0})
+					
+					tint (9, 130, 0)
+					image (abilitySymbol[0][selectedAbility[0]], scaler (1246), yPos(155), scaler(121), scaler(121))
+
+					image (abilitySymbol[1][selectedAbility[1]], scaler (1142), yPos(200), scaler(121), scaler(121))
+
+					image (abilitySymbol[2][selectedAbility[2]], scaler (1292), yPos(262), scaler(121), scaler(121))
+					noTint ()
+
+					push ()
+						fill (215)
+						stroke (0,0,0,0)
+						rect (scaler (90), yPos (90), scaler (270), scaler (270))
+					pop()
+
+					push ()
+						translate (scaler (215), yPos (212))
+						if (scaler (215)-mouseX < 0) {
+							rotate(atan ((yPos (212)-mouseY)/(scaler (215)-mouseX)) + PI + PI/2)
+						} else {
+							rotate(atan ((yPos (212)-mouseY)/(scaler (215)-mouseX)) + PI/2)
+						}
+						image (mainImgSet[0].name, 0, 0, scaler (220), scaler (220))
+						image (mainImgSet[1].name, 0, 0, scaler (220), scaler (220))
+					pop()
+				}
+
+				if (startingSelection == 1) {
+					//class
+
+					image (startScreenAsset[3], xPos(720), yPos(450), screen.width, scaler(900))
+
+					button (xPos (82), yPos(282), scaler(210),scaler(210), function () {selectedClass = 0})
+					button (xPos (513), yPos(282), scaler(210),scaler(210), function () {selectedClass = 1})
+					button (xPos (942), yPos(282), scaler(210),scaler(210), function () {selectedClass = 2})
+
+					button (xPos (82), yPos(573), scaler(210),scaler(210), function () {selectedClass = 3})
+					button (xPos (513), yPos(573), scaler(210),scaler(210), function () {selectedClass = 4})
+					button (xPos (942), yPos(573), scaler(210),scaler(210), function () {selectedClass = 5})
+					
+					fill (0,0)
+					stroke ("#098200")
+					strokeWeight (scaler (7))
+					ellipse (xPos (623), yPos(389), scaler(128),scaler(128))
+
+					fill (0)
+					textSize (35)
+					strokeWeight (scaler(12))
+					stroke ("#ffff00")
+					fill (0,0,0,0)
+					switch (selectedClass) {
+						case 0: 
+							rect (xPos (93), yPos(293), scaler(195),scaler (195))
+							break;
+						case 1: 
+							rect (xPos (523), yPos(293), scaler(195),scaler (195))
+							break;
+						case 2: 
+							rect (xPos (953), yPos(293), scaler(195),scaler (195))
+							break;
+						case 3: 
+							rect (xPos (93), yPos(586), scaler(195),scaler (195))
+							break;
+						case 4: 
+							rect (xPos (523), yPos(586), scaler(195),scaler (195))
+							break;
+						case 5: 
+							rect (xPos (953), yPos(586), scaler(195),scaler (195))
+							break;
+					}
+
+					stroke (0,0,0)
+					strokeWeight (1)
+
+					if (keys.bs == 1) {
+						startingSelection = 0
+					}
+				}
+
+				if (startingSelection == 2) {
+					//ability
+
+					image (startScreenAsset[2], xPos(720), yPos(450), screen.width, scaler(900))
+
+				
+					button (xPos (137), yPos(296), scaler(105),scaler(105), function () {selectedAbility[0] = 0})
+					button (xPos (305), yPos(296), scaler(105),scaler(105), function () {selectedAbility[0] = 1})
+					
+					button (xPos (137), yPos(468), scaler(105),scaler(105), function () {selectedAbility[0] = 2})
+					button (xPos (305), yPos(468), scaler(105),scaler(105), function () {selectedAbility[0] = 3})
+
+					button (xPos (137), yPos(638), scaler(105),scaler(105), function () {selectedAbility[0] = 4})
+					button (xPos (305), yPos(638), scaler(105),scaler(105), function () {selectedAbility[0] = 5})
+
+					
+					textSize (scaler(30))
+					fill (0)
+					strokeWeight (0)
+					fill (0,0) 
+					strokeWeight (scaler(6))
+					stroke ("#ffff00")
+					switch (selectedAbility[0]) {
+						case 0: 
+							rect (xPos (140), yPos(299), scaler(100),scaler (100))
+							break;
+						case 1: 							
+							rect (xPos (308), yPos(299), scaler(100),scaler (100))
+							break;
+						case 2: 
+							rect (xPos (139), yPos(471), scaler(100),scaler (100))
+							break;
+						case 3: 
+							rect (xPos (307), yPos(471), scaler(100),scaler (100))
+							break;
+						case 4: 
+							rect (xPos (140), yPos(641), scaler(100),scaler (100))
+							break;
+						case 5: 
+							rect (xPos (308), yPos(641), scaler(100),scaler (100))
+							break;
+					}
+
+					stroke (0,0,0)
+					strokeWeight (1)
+					
+					fill (0)
+					textSize (scaler(55))
+
+					button (xPos (584), yPos(299), scaler(105),scaler(105), function () {selectedAbility[1] = 0})
+					button (xPos (752), yPos(299), scaler(105),scaler(105), function () {selectedAbility[1] = 1})
+					
+					button (xPos (584), yPos(471), scaler(105),scaler(105), function () {selectedAbility[1] = 2})
+					button (xPos (752), yPos(471), scaler(105),scaler(105), function () {selectedAbility[1] = 3})
+					
+					button (xPos (584), yPos(641), scaler(105),scaler(105), function () {selectedAbility[1] = 4})
+					button (xPos (752), yPos(641), scaler(105),scaler(105), function () {selectedAbility[1] = 5})
+					
+					textSize (scaler(30))
+					fill (0,0) 
+					stroke (255,255,0)
+					strokeWeight (scaler(6))
+					switch (selectedAbility[1]) {
+						case 0: 
+							rect (xPos (587), yPos(298), scaler(100),scaler (100))
+							break;
+						case 1: 
+							rect (xPos (754), yPos(298), scaler(100),scaler (100))
+							break;
+						case 2: 
+							rect (xPos (587), yPos(470), scaler(100),scaler (100))
+							break;
+						case 3: 
+							rect (xPos (754), yPos(470), scaler(100),scaler (100))
+							break;
+						case 4: 
+							rect (xPos (587), yPos(640), scaler(100),scaler (100))
+							break;
+						case 5: 
+							rect (xPos (754), yPos(640), scaler(100),scaler (100))
+							break;
+					}
+
+					fill (0)
+					stroke (0,0,0)
+					strokeWeight (1)
+					textSize (scaler(55))
+					strokeWeight (0)
+					fill (150)
+
+					button (xPos (1028), yPos(299), scaler(105),scaler(105), function () {selectedAbility[2] = 0})
+					button (xPos (1196), yPos(299), scaler(105),scaler(105), function () {selectedAbility[2] = 1})
+					
+					button (xPos (1028), yPos(471), scaler(105),scaler(105), function () {selectedAbility[2] = 2})
+					button (xPos (1196), yPos(471), scaler(105),scaler(105), function () {selectedAbility[2] = 3})
+					
+					button (xPos (1028), yPos(641), scaler(105),scaler(105), function () {selectedAbility[2] = 4})
+					button (xPos (1196), yPos(641), scaler(105),scaler(105), function () {selectedAbility[2] = 5})
+					
+					textSize (scaler(30))
+					fill (0,0) 
+					stroke (255,255,0)
+					strokeWeight (scaler(6))
+					switch (selectedAbility[2]) {
+						case 0: 							
+							rect (xPos (1030), yPos(300), scaler(100),scaler (100))
+							break;
+						case 1: 
+							rect (xPos (1198), yPos(300), scaler(100),scaler (100))
+							break;
+						case 2: 
+							rect (xPos (1030), yPos(472), scaler(100),scaler (100))
+							break;
+						case 3: 
+							rect (xPos (1198), yPos(472), scaler(100),scaler (100))
+							break;
+						case 4: 
+							rect (xPos (1030), yPos(642), scaler(100),scaler (100))
+							break;
+						case 5: 
+							rect (xPos (1198), yPos(642), scaler(100),scaler (100))
+							break;
+					}
+					stroke (0,0,0)
+					strokeWeight (1)
+
+					if (keys.bs == 1) {
+						startingSelection = 0
+					}
+				}
+
+				if (startingSelection == 3) {
+					//modes
+
+					image (startScreenAsset[4], xPos(720), yPos(450), screen.width, scaler(900))
+
+					button (xPos (174), yPos(279), scaler(173),scaler(173), function () {difficulty = 0})
+					button (xPos (479), yPos(279), scaler(173),scaler(173), function () {difficulty = 1})
+					button (xPos (786), yPos(279), scaler(173),scaler(173), function () {difficulty = 2})
+					button (xPos (1094), yPos(279), scaler(173),scaler(173), function () {difficulty = 3})
+
+					button (xPos (174), yPos(619), scaler(173),scaler(173), function () {ramping = 0})
+					button (xPos (479), yPos(619), scaler(173),scaler(173), function () {ramping = 1})
+					button (xPos (786), yPos(619), scaler(173),scaler(173), function () {ramping = 2})
+					button (xPos (1094), yPos(619), scaler(173),scaler(173), function () {ramping = 3})
+
+					button (xPos (740), yPos(511), scaler(180),scaler(52), function () {if (endless == 1) {endless = 0} else {endless = 1}; keys.mouse = 0})
+
+
+					fill (0,0) 
+					stroke ("#ffff00")
+					strokeWeight (scaler(9))
+
+					switch (difficulty) {
+						case 0: 
+							rect (xPos (177), yPos(282), scaler(166),scaler (166))
+							break;
+						case 1: 
+							rect (xPos (482), yPos(282), scaler(166),scaler (166))
+							break;
+						case 2: 
+							rect (xPos (789), yPos(282), scaler(166),scaler (166))
+							break;
+						case 3: 
+							rect (xPos (1097), yPos(282), scaler(166),scaler (166))
+							break;
+					}
+
+					if (endless == 1) {
+						stroke ("#00ffff")
+						image (checkmarks[1], xPos (890), yPos(538), scaler(31),scaler (31))
+					} else {
+						image (checkmarks[0], xPos (890), yPos(538), scaler(31),scaler (31))
+					}
+
+					switch (ramping) {
+						case 0: 
+							rect (xPos (177), yPos(622), scaler(166),scaler (166))
+							break;
+						case 1: 
+							rect (xPos (483), yPos(622), scaler(166),scaler (166))
+							break;
+						case 2: 
+							rect (xPos (789), yPos(622), scaler(166),scaler (166))
+							break;
+						case 3: 
+							rect (xPos (1097), yPos(622), scaler(166),scaler (166))
+							break;
+					}
+				
+					stroke (0,0,0)
+					strokeWeight (1)
+
+					if (keys.bs == 1) {
+						startingSelection = 0
+					}
+				}
+			}
+
+			if (stage == 1) {
+				main.hp.heal = 0
+				mainAssign (selectedClass)
+
+				switch (selectedAbility[0]) {
+					case 0:
+						main.ability.t1.type = "fireball"
+						main.ability.t1.target = 150
+						break;
+					case 1:
+						main.ability.t1.type = "bulletwave"
+						main.ability.t1.target = 150
+						break;
+					case 2:
+						main.ability.t1.type = "stunBomb"
+						main.ability.t1.target = 180
+						break;
+					case 3:
+						main.ability.t1.type = "instaKill"
+						main.ability.t1.target = 120
+						break;
+					case 4:
+						main.ability.t1.type = "banish"
+						main.ability.t1.target = 120
+						break;
+					case 5:
+						main.ability.t1.type = "flex"
+						main.ability.t1.target = 210
+						break;
+				}
+				switch (selectedAbility[1]) {
+					case 0:
+						main.ability.t2.type = "burst"
+						main.ability.t2.target = 300
+						break;
+					case 1:
+						main.ability.t2.type = "fastFire"
+						main.ability.t2.target = 240
+						break;
+					case 2:
+						main.ability.t2.type = "superBullet"
+						main.ability.t2.target = 240
+						break;
+					case 3:
+						main.ability.t2.type = "fear"
+						main.ability.t2.target = 300
+						break;
+					case 4:
+						main.ability.t2.type = "poisonWave"
+						main.ability.t2.target = 230
+						break;
+					case 5:
+						main.ability.t2.type = "power"
+						main.ability.t2.target = 330
+						break;
+				}
+				switch (selectedAbility[2]) {
+					case 0:
+						main.ability.t3.type = "nova"
+						main.ability.t3.target = 390
+						break;
+					case 1:
+						main.ability.t3.type = "rocketStorm"
+						main.ability.t3.target = 450
+						break;
+					case 2:
+						main.ability.t3.type = "tStrike"
+						main.ability.t3.target = 450
+						break;
+					case 3:
+						main.ability.t3.type = "combust"
+						main.ability.t3.target = 420
+						break;
+					case 4:
+						main.ability.t3.type = "intangible"
+						main.ability.t3.target = 420
+						break;
+					case 5:
+						main.ability.t3.type = "superbuff"
+						main.ability.t3.target = 510
+						break;
+				}
+
+				switch (difficulty) {
+					case 0:
+						timeBetween =  3000
+						break;
+					case 1:
+						timeBetween =  2000
+						break;
+					case 2:
+						timeBetween =  1500
+						break;
+					case 3:
+						timeBetween =  1000
+						break;
+				}
+
+				switch (ramping) {
+					case 0: 
+						rampAmount = 0
+						break;
+					case 1: 
+						rampAmount = 4
+						break;
+					case 2: 
+						rampAmount = 8
+						break;
+					case 3: 
+						rampAmount = 16
+						break;
+				}
+			
+				strokeWeight (0)
+				stage = 1.5
+				animatingFrames = 60
+			}
+
+			if (stage == 1.5) {
+				//start animation stage
+				allDraw ()
+				fill (215, 255*animatingFrames/60)
+				stroke (0,0,0,0)
+				rect (0,0,screen.width, screen.height)
+				tint (255, 255*animatingFrames/60)
+				image (startScreenAsset[0], scaler(720), yPos(450), screen.width, scaler(900))
+				fill (215)
+				stroke (0,0,0,0)
+				rect (scaler (90), yPos (90), scaler (270), scaler (270))
+				noTint ()
+
+				tint (9, 130, 0, 255*animatingFrames/60)
+					image (abilitySymbol[0][selectedAbility[0]], scaler (1246), yPos(155), scaler(121), scaler(121))
+
+					image (abilitySymbol[1][selectedAbility[1]], scaler (1142), yPos(200), scaler(121), scaler(121))
+
+					image (abilitySymbol[2][selectedAbility[2]], scaler (1292), yPos(262), scaler(121), scaler(121))
+				noTint ()
+
+				
+
+				push ()
+
+					var t = 60 - animatingFrames
+					var b = scaler (215)
+					var c = scaler(720)-scaler (215)
+					var d = 60
+
+
+					var realX = -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b
+
+					var b = yPos (212)
+					var c = yPos(450)-yPos (212)
+
+					var realY = -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b
+
+
+					translate (realX, realY)
+					if (realX-mouseX < 0) {
+						rotate(atan ((realY-mouseY)/(realX - mouseX)) + PI + PI/2)
+					} else {
+						rotate(atan ((realY-mouseY)/(realX - mouseX)) + PI/2)
+					}
+					image (mainImgSet[0].name, 0, 0, (main.size - scaler (220))*(1-animatingFrames/60) + scaler (220), (main.size - scaler (220))*(1-animatingFrames/60) + scaler (220))
+					image (mainImgSet[1].name, 0, 0, (main.size - scaler (220))*(1-animatingFrames/60) + scaler (220), (main.size - scaler (220))*(1-animatingFrames/60) + scaler (220))
+				pop()
+
+
+
+				animatingFrames --
+				if (animatingFrames == -2) {
+					stage = 2 
+					animatingFrames = 0
+					spawnEnemy ()
+				}
+				if (keys.q == 1) {
+					stage = 2
+					keys.q = 0
+					animatingFrames = 0
+					spawnEnemy ()
+				}
+			}
+			
+
+			if (stage == 2){
+				timingTimer++
+				mainmain ()
+				enemyMain ()
+				bulletFly ()
+				explode ()
+
+				allDraw ()
+				if (keys.q == 1) {
+					stage = 2.5
+					keys.q = 0
+					clearTimeout (spawnTimeout)
+				}
+			}
+
+			if (stage == 2.25) {
+				//return to stage 2
+				animatingFrames --
+				if (animatingFrames == 0) {
+					stage = 2
+					spawnEnemy ()
+				}
+				allDraw ()
+				fill ("#14c800")
+				stroke ("#098200")
+				strokeWeight (10)
+				rect (scaler (595), yPos (325), scaler (250), scaler (250))
+				fill ("#000000")
+				strokeWeight (0)
+				textSize (150)
+				text (floor (animatingFrames/30) + 1, scaler (720), scaler (500))
+
+			}
+
+			if (stage == 2.5) {
+				//pause screen
+				image (pauseScreenImg, xPos(720), yPos(450), screen.width, scaler(900))
+				button (scaler (543), yPos (609), scaler (356), scaler (114), function () {stage = 2.25; keys.mouse = 0; animatingFrames = 60})
+				button (scaler (616), yPos (246), scaler (207), scaler (65), function () {restartAll (); keys.mouse = 0})
+				button (scaler (616), yPos (348), scaler (207), scaler (65), function () {stage = 3; keys.mouse = 0})
+				
+				image (classSymbol[selectedClass], scaler(408), yPos(518), scaler(70), scaler(70))
+				tint (9, 130, 0, 255)
+				image (abilitySymbol[0][selectedAbility[0]], scaler(564), yPos(518), scaler(70), scaler(70))
+				image (abilitySymbol[1][selectedAbility[1]], scaler(710), yPos(518), scaler(70), scaler(70))
+				image (abilitySymbol[2][selectedAbility[2]], scaler(864), yPos(518), scaler(70), scaler(70))
+				noTint ()
+				image (dificultySymbol[endless][ramping][difficulty], scaler(1027), yPos(516), scaler(74), scaler(74))
+			}
+
+
+			if (stage == 2.75) {
+				//animation stage
+				
+				animatingFrames --
+				if (animatingFrames == 0) {
+					stage = 3
+				}
+
+				if (animatingFrames == 60) {
+					explodeCall (main.x, main.y, 0, 500, 3, {type: "stun", duration: 90, intensity: null})
+					clearTimeout (spawnTimeout)
+					keys.q = 0
+				}
+				if (animatingFrames < 30) {
+					allDraw ()
+					fill (214, 255-255*animatingFrames/30)
+					rect (0,0,screen.width, screen.height)
+					push ()
+						tint (255, 255-255*animatingFrames/30)
+						image (endScreenAsset, xPos(720), yPos(450), screen.width, scaler(900))
+						noTint ()
+
+						tint (9, 130, 0, 255-255*animatingFrames/30)
+						image (abilitySymbol[0][selectedAbility[0]], scaler(564), yPos(531), scaler(70), scaler(70))
+						image (abilitySymbol[1][selectedAbility[1]], scaler(710), yPos(531), scaler(70), scaler(70))
+						image (abilitySymbol[2][selectedAbility[2]], scaler(864), yPos(531), scaler(70), scaler(70))
+						noTint ()
+					
+						tint (255, 255-255*animatingFrames/30)
+						image (classSymbol[selectedClass], scaler(408), yPos(531), scaler(70), scaler(70))
+
+						image (dificultySymbol[endless][ramping][difficulty], scaler(1027), yPos(529), scaler(74), scaler(74))
+
+						var timingSecs = String (floor (timingTimer/30)%60)
+						if (floor (timingTimer/30)%60 < 10) {
+							timingSecs = "0" + timingSecs
+						}
+						var timingMins = String (floor (timingTimer/1800))
+					pop ()
+					
+					fill (20, 200, 0, 255-255*animatingFrames/30)
+					strokeWeight (scaler (10))
+					stroke (9,130, 0, 255-255*animatingFrames/30)
+					textSize (scaler (250))
+				
+					text (timingMins + ":" + timingSecs, scaler (720), yPos (390))
+					
+				} else {
+					allDraw ()
+				}
+
+				enemyMain ()
+				bulletFly ()
+				explode ()
+
+				if (keys.q == 1) {
+					stage = 3
+				}
+				
+			}
+
+			if (stage == 3) {
+				
+				image (endScreenAsset, xPos(720), yPos(450), screen.width, scaler(900))
+
+				button (scaler (603), yPos (680), scaler (234), scaler (62), function () {restartAll()})
+
+				image (classSymbol[selectedClass], scaler(408), yPos(531), scaler(70), scaler(70))
+				tint (9, 130, 0, 255)
+				image (abilitySymbol[0][selectedAbility[0]], scaler(564), yPos(531), scaler(70), scaler(70))
+				image (abilitySymbol[1][selectedAbility[1]], scaler(710), yPos(531), scaler(70), scaler(70))
+				image (abilitySymbol[2][selectedAbility[2]], scaler(864), yPos(531), scaler(70), scaler(70))
+				noTint ()
+
+				image (dificultySymbol[endless][ramping][difficulty], scaler(1027), yPos(529), scaler(74), scaler(74))
+
+				var timingSecs = String (floor (timingTimer/30)%60)
+				if (floor (timingTimer/30)%60 < 10) {
+					timingSecs = "0" + timingSecs
+				}
+				var timingMins = String (floor (timingTimer/1800))
+				fill ("#14c800")
+				strokeWeight (scaler (10))
+				stroke ("#098200")
+				textSize (scaler (250))
+				//textAlign (CENTER)
+				
+				text (timingMins + ":" + timingSecs, scaler (720), yPos (390))
+				//textAlign (LEFT)
+
+				
+			}
+
+		}
+
+
+		function restartAll () {
+			stage = 0
+			keys.mouse = 0
+			bullet = [
+				{
+					fly: false,
+					x: 0,
+					y: 0,
+					vx: 0,
+					vy: 0,
+				dmg: 0,
+					target: 0,
+					size: 0,
+					range: 0,
+					weight: 0,
+					travel: 0,
+				
+					explosive: false,
+					effects: [],
+
+					visuals: {
+						color: "",
+						border: "",
+						borderWidth: 0,
+					}
+				}
+			]
+
+			main = {
+				x: 0,
+				y: 0,
+				size: 100,
+				weight: 100,
+			
+				reload: {
+					ing: 0,
+					timer: 0,
+				},
+
+				status: [{
+					type: null,
+					duration: null,
+					intensity: null,
+				},
+				],
+
+				statusDisplay: [
+					{
+						type: "fire",
+						duration: 0,
+					},
+					{
+						type: "stun",
+						duration: 0,
+					},
+					{
+						type: "vulnerable",
+						duration: 0,
+					},
+					{
+						type: "slow",
+						duration: 0,
+					},
+					{
+						type: "weak",
+						duration: 0,
+					},
+					{
+						type: "regen",
+						duration: 0,
+					},
+					{
+						type: "speed",
+						duration: 0,
+					},
+					{
+						type: "shield",
+						duration: 0,
+					},
+					{
+						type: "strong",
+						duration: 0,
+					},
+					{
+						type: "spike",
+						duration: 0,
+					},
+					{
+						type: "unspike",
+						duration: 0,
+					},
+				],
+
+				stunned: 0,
+			
+				v: {
+					x: 0,
+					y: 0,
+					max: 25,
+					increase: 4,
+					stable: 0.5
+				},
+				
+				attack: {
+					timer: 0,
+					bodyDamage: 50,
+					ammoLeft: 30,
+
+			
+					ammo: 30,
+					shots: 1,
+					atsp: 10,
+					reload: 30,
+					recoil: 0,
+				
+					bullet: {
+						target: 1,
+						range: 2000,
+						weight: 1,
+						speed: 60,
+						explode: false,
+						dmg: 50,
+						regDmg: 50,
+						accuracy: 50,
+						size: 15,
+						visuals: {
+							color: '#aaaaaa',
+							borderWidth: 2,
+							border: '#000000',
+						},
+						effects: [
+							{
+								type: null,
+								duration: null,
+								intensity: null,
+							},
+						]
+					},	
+				},
+
+				hp: {
+					left: 2000,
+					max: 2000,
+					heal: 0,
+					shieldVal: 1,
+					bodyDmgShield: 1,
+				},
+
+				visuals: {
+					imgSet: [
+						{
+							name: "",
+							x: 0,
+							y: 0,
+						},
+					],
+					timer: 0,
+					tint: 255,
+					rotate: 0,
+				},
+
+				ability: {
+					heal: { 
+						firstTime: 0,
+						timer: 0,
+						target: 30,
+						slowdown: 0.4,
+						amount: 100,
+						regen: [{
+							type: "regen",
+							duration: 120,
+							intensity: 2
+						}]
+					},
+					t1: {
+						type: "banish",
+						timer: 0,
+						target: 150,
+					},
+					t2: {
+						type: "power",
+						timer: 0,
+						target: 300,
+					},
+					t3: {
+						type: "booster",
+						timer: 0,
+						target: 600,
+					}
+				},
+			}
+		
+			enemy = [
+				{
+					stage: 0,
+
+					x: 500,
+					y: 500,
+				
+				
+					size: 120,
+					weight: 100,
+
+					status: [{
+						type: null,
+						duration: null,
+						intensity: null
+					},
+					],
+
+					stunned: 0,
+
+					t: {
+						x: 0,
+						y: 0,
+						spin: {
+							radius: 100,
+							v: 3,
+							pos: 0,
+						}
+					
+					},
+				
+					v: {
+						x: 0,
+						y: 0,
+						max: 30,
+						increase: 1,
+					},
+
+					attack: {
+						timer: 0,
+						bodyDamage: 0,
+						targeting: "ranged",
+						ammoLeft: 50,
+
+						range: 1000,
+						reload: 15,
+						atsp: 1,
+						ammo: 50,
+						shots: 4,
+						recoil: 0.1,
+					
+
+						bullet: {
+							target: 0,
+							accuracy: 120,
+							dmg: 20,
+							weight: 0,
+							speed: 40,
+							range: 2000,
+							size: 15,
+
+							explode: {
+								radius: 100,
+								kb: 1,
+							},
+							visuals: {
+								color: 'red',
+								borderWidth: 0,
+								border: 'red',
+							},
+							effects: []
+						},
+					},
+				
+					hp: {
+						left: 1500,
+						max: 1500,
+						heal: 0,
+						shieldVal: 0.75,
+						bodyDmgShield: 1,
+					},
+				
+					visuals: {
+						rotate: 0,
+						timer: 0,
+						timt: 255,
+						imgSet: [
+							{	
+								type: "center",
+								name: null,
+							}
+						],
+					},
+					onDeath: {
+						type: "explode",
+						dmg: 100,
+						radius: 100,
+						kb: 1,
+						size: 100,
+						effects: []
+					},
+					statusDisplay: [
+						{
+						type: "fire",
+						duration: 0,
+						},
+						{
+							type: "stun",
+							duration: 0,
+						},
+						{
+							type: "vulnerable",
+							duration: 0,
+						},
+						{
+							type: "slow",
+							duration: 0,
+						},
+						{
+							type: "weak",
+							duration: 0,
+						},
+					],
+									
+				},
+			]
+
+			explosion = [
+				{
+					exp: false,
+					x: 0,
+					y: 0,
+					radius: 0,
+					timer: 0,
+					dmg: 0,
+					kb: 0,
+					effects: [null, null]
+				}
+			]
+
+			clearTimeout (spawnTimeout)
+
+			timingTimer = 0
+		}
+		
+
+		function reScreen () {
+			if (keys.f == 1) {
+				document.getElementsByTagName("body")[0].children[1].requestFullscreen()
+				keys.f = 0
+			}
+		}
+
+
+		function spawnEnemy () {
+			enemyCall ()
+			spawnTimeout = setTimeout (spawnEnemy, timeBetween + random (-100, 100))
+			if (endless == 1) {
+				endlessRamp ()
+			} else {
+				rampingFn ()
+			}
+			
+		}
+
+
+		function rampingFn () {
+			if (rampAmount > 0) {
+				switch (ramping) {
+					case 1:
+						rampAmount = rampAmount * 9/10
+						break;
+					case 2: 
+						rampAmount = rampAmount * 19/20
+						break;
+					case 3: 
+						rampAmount = rampAmount * 39/40
+						break;
+				}
+				
+			}
+			if (rampAmount <= 0) {
+				rampAmount = 0
+			}
+
+			timeBetween -= rampAmount
+			if (timeBetween < 500) {
+				timeBetween = 500
+			}
+		}
+
+		function endlessRamp () {
+			if (rampAmount < 100) {
+				switch (ramping) {
+					case 1:
+						rampAmount = rampAmount + (rampAmount * 1/100)
+						break;
+					case 2: 
+						rampAmount = rampAmount + (rampAmount * 1/80)
+						break;
+					case 3: 
+						rampAmount = rampAmount + (rampAmount * 1/60)
+						break;
+				}
+			}
+
+			timeBetween -= rampAmount
+
+			if (timeBetween < 100) {
+				timeBetween = 100
+			}
+		}
+
+		function button (x, y, nx, ny, act) {
+			//rect (x, y, nx, ny)
+			if (mouseX > x && mouseY > y && mouseX < x+nx && mouseY < y+ny) {
+				if (keys.mouse == 1) {
+					act()
+				}
+				cursor("pointer")
+			}
+		}
+
+		function scaler (val) {
+			return (val*screen.width/1440)
+		}
+
+		function xPos (cord) {
+			return ((screen.width/1440)*cord)
+		}
+
+		function yPos (cord) {
+			return (screen.height/2 - (450*screen.width/1440) + (screen.width/1440)*cord)
+		}
+		
+		function mainAssign (type) {
+			var t = mainType[type]
+			var e = main
+
+			e.x = 2000
+			e.y = 1000
+
+			e.status = [{type: null, duration: null, intensity: null},]
+
+			e.stunned = 0
+
+			e.v.x = 0
+			e.v.y = 0
+
+			e.size = t.size
+			e.weight = t.weight
+
+			e.v.max = t.v.max
+			e.v.increase = t.v.increase
+			e.v.stable = t.v.stable
+
+			e.attack.bullet.range = t.attack.bullet.range
+			e.attack.bullet.speed = t.attack.bullet.speed
+			e.attack.bullet.explode = t.attack.bullet.explode
+			e.attack.bullet.dmg = t.attack.bullet.dmg
+			e.attack.bullet.regDmg = t.attack.bullet.regDmg
+			e.attack.bullet.accuracy = t.attack.bullet.accuracy
+			e.attack.bullet.size = t.attack.bullet.size
+			e.attack.bullet.visuals = t.attack.bullet.visuals
+			e.attack.bullet.effects = t.attack.bullet.effects
+
+			e.attack.bodyDamage = t.attack.bodyDamage
+			e.attack.range = t.attack.range
+			e.attack.reload = t.attack.reload
+			e.attack.atsp = t.attack.atsp
+			e.attack.ammo = t.attack.ammo
+			e.attack.ammoLeft = t.attack.ammo
+			e.attack.shots = t.attack.shots
+			e.attack.recoil = t.attack.recoil
+			e.attack.timer = 0
+
+			e.hp.left = t.hp.max
+			e.hp.max = t.hp.max
+			e.hp.heal = t.hp.heal
+			e.hp.shieldVal = t.hp.shieldVal
+			e.hp.bodyDmgShield = t.hp.bodyDmgShield
+			
+
+			e.ability.heal = t.ability.heal
+
+			e.statusDisplay = [
+				{
+					type: "fire",
+					duration: 0,
+				},
+				{
+					type: "stun",
+					duration: 0,
+				},
+				{
+					type: "vulnerable",
+					duration: 0,
+				},
+				{
+					type: "slow",
+					duration: 0,
+				},
+				{
+					type: "weak",
+					duration: 0,
+				},
+				{
+					type: "regen",
+					duration: 0,
+				},
+				{
+					type: "speed",
+					duration: 0,
+				},
+				{
+					type: "shield",
+					duration: 0,
+				},
+				{
+					type: "strong",
+					duration: 0,
+				},
+				{
+					type: "spike",
+					duration: 0,
+				},
+				{
+					type: "unspike",
+					duration: 0,
+				},
+			]
+			
+		}
+
+		function mainmain () {
+			if (Number.isNaN(main.x)) {
+				main.x = 500
+				main.y = 500
+				main.v.x = 0
+				main.v.y = 0
+			}
+			if (main.stunned == 0){
+				movement ()
+				mainAttack ()
+
+				mainAbility ()
+
+				burstShoot ()
+				novaShoot ()
+				banishShoot ()
+				rocketStormShoot ()
+				tStrikeShoot ()
+			} else {
+				strongStable()
+			}
+
+			main.x += main.v.x
+			main.y += main.v.y
+			mainWallBounce ()
+			stable ()
+			mainHeal()
+			mainEffects()
+			mainStatusUpdate ()
+
+			main.hp.left += main.hp.heal
+
+
+			if (main.hp.left > main.hp.max) {
+				main.hp.left = main.hp.max
+			}
+
+			if (main.hp.left <= 0) {
+				main.hp.left = 0
+				stage = 2.75
+				animatingFrames = 61
+			}
+			mainReload ()
+		}
+
+		function mainAbility () {
+			if (keys.n1 == 1 && main.ability.t1.timer == 0) {
+				mainAbilityCall (main.ability.t1.type)
+				main.ability.t1.timer = main.ability.t1.target
+			}
+			if (main.ability.t1.timer != 0) {
+				main.ability.t1.timer--
+			}
+
+			if (keys.n2 == 1 && main.ability.t2.timer == 0) {
+				mainAbilityCall (main.ability.t2.type)
+				main.ability.t2.timer = main.ability.t2.target
+			}
+			if (main.ability.t2.timer != 0) {
+				main.ability.t2.timer--
+			}
+
+			if (keys.n3 == 1 && main.ability.t3.timer == 0) {
+				mainAbilityCall (main.ability.t3.type)
+				main.ability.t3.timer = main.ability.t3.target
+			}
+			if (main.ability.t3.timer != 0) {
+				main.ability.t3.timer--
+			}
+		}
+
+		function mainAbilityCall (type) {
+			if (type == "fireball") {
+				fireballShoot ()
+			}
+			if (type == "instaHeal") {
+				effectCreate (main, [{type: "regen", duration: 150, intensity: 2}])
+				main.hp.left += 200
+				if (main.hp.left > main.hp.max) {
+					main.hp.left = main.hp.max
+				}
+			}
+			if (type == "banish") {
+				banishContinue.value = 1
+				banishContinue.timer = banishContinue.target
+			}
+			if (type == "instaKill") {
+				instaKillShoot()
+			}
+			if (type == "instaReload") {
+				instaReload ()
+			}
+			if (type == "swift") {
+				effectCreate (main, [{type: "speed", duration: 120, intensity: 1.3}])
+			}
+			if (type == "stunBomb") {
+				stunBombShoot ()
+			}
+			if (type == "bulletwave") {
+				bulletWaveShoot ()
+			}
+			if (type == "flex") {
+				effectCreate (main, [{type: "strong", duration: 90, intensity: 3}, {type: "weak", duration: 120, intensity: 0.5}])
+			}
+
+
+			if (type == "burst") {
+				burstContinue.value = 1
+				burstContinue.timer = burstContinue.target
+			}
+			if (type == "fastFire") {
+				fastFireShoot()
+			}
+			if (type == "debuff") {
+				debuffShoot ()
+			}
+			if (type == "power") {
+				effectCreate (main, [{type: "shield", duration: 180, intensity: 0.75}, {type: "spike", duration: 180, intensity: 2}, {type: "speed", duration: 180, intensity: 1.2}, {type: "regen", duration: 200, intensity: 1}, {type: "strong", duration: 180, intensity: 2}])
+				main.hp.left -= 200
+			}
+			if (type == "poisonWave") {
+				poisonWaveShoot()
+			}
+			if (type == "superBullet") {
+				superBulletShoot ()
+			}
+			if (type == "fear") {
+				for (q = 0; q<enemy.length; q++) {
+					effectCreate (enemy[q], [{type: "vulnerable", duration: 150, intensity: 1.5}, {type: "weak", duration: 150, intensity: 0.5}, {type: "unspike", duration: 150, intensity: 0.5}, {type: "slow", duration: 150, intensity: 0.5}])
+				}
+			}
+
+
+			if (type == "nova") {
+				novaContinue.value = 1
+				novaContinue.timer = novaContinue.target
+				effectCreate (main, [{type: "shield", duration: 120, intensity: 0.001}])
+			}
+			if (type == "superShield") {
+				effectCreate (main, [{type: "shield", duration: 150, intensity: 0.05}, {type: "spike", duration: 150, intensity: 10}, {type: "speed", duration: 150, intensity: 1.2}, {type: "regen", duration: 60, intensity: 1}])
+			}
+			if (type == "intangible") {
+				effectCreate (main, [{type: "shield", duration: 150, intensity: 0.05}, {type: "spike", duration: 150, intensity: 10}, {type: "speed", duration: 150, intensity: 1.2}, {type: "regen", duration: 60, intensity: 1}])
+			}
+			if (type == "rocketStorm") {
+				rocketStormContinue.value = 1
+				rocketStormContinue.timer = rocketStormContinue.target
+			}
+			if (type == "activator") {
+				mainAbilityCall (main.ability.t1.type)
+				mainAbilityCall (main.ability.t2.type)
+				main.ability.t1.timer = 0
+				main.ability.t2.timer = 0
+				instaReload ()
+			}
+			if (type == "booster") {
+				effectCreate (main, [{type: "shield", duration: 300, intensity: 1}, {type: "spike", duration: 300, intensity: 2.5}, {type: "speed", duration: 300, intensity: 1.2}, {type: "regen", duration: 300, intensity: 1}, {type: "strong", duration: 300, intensity: 2.5}])
+				main.hp.left += 200
+				if (main.hp.left > main.hp.max) {
+					main.hp.left = main.hp.max
+				}
+			}
+			if (type == "superHeal") {
+				effectCreate (main, [{type: "regen", duration: 240, intensity: 20}, {type: "shield", duration: 240, intensity: 0.5}])
+				main.hp.left += 300
+				if (main.hp.left > main.hp.max) {
+					main.hp.left = main.hp.max
+				}
+			}
+			if (type == "superbuff") {
+				mainAbilityCall (main.ability.t1.type)
+				mainAbilityCall (main.ability.t2.type)
+				main.ability.t1.timer = 0
+				main.ability.t2.timer = 0
+				instaReload ()
+				main.hp.left += 200
+				if (main.hp.left > main.hp.max) {
+					main.hp.left = main.hp.max
+				}
+				effectCreate (main, [{type: "shield", duration: 200, intensity: 0.75}, {type: "strong", duration: 200, intensity: 2.5}, {type: "regen", duration: 200, intensity: 1}])
+			}
+			if (type == "combust") {
+				for (q = 0; q<enemy.length; q++) {
+					effectCreate (enemy[q], [{type: "fire", duration: 1, intensity: 10000}])
+				}
+				explodeCall (main.x, main.y, 750, 500, 0, {type: null, duration: null, intensity: null})
+				effectCreate (main, [{type: "regen", duration: 1500, intensity: 0.5}])
+			}
+			if (type == "tStrike") {
+				tStrikeContinue.value = 1
+				tStrikeContinue.timer = tStrikeContinue.target
+			}
+		}
+
+
+		function poisonWaveShoot () {
+
+			poisonWave.dmg = poisonWave.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+			shoot (main.x, main.y, main.x+2, main.y+1, poisonWave)
+			shoot (main.x, main.y, main.x+1, main.y+2, poisonWave)
+			shoot (main.x, main.y, main.x+1, main.y+1, poisonWave)
+			shoot (main.x, main.y, main.x+1, main.y, poisonWave)
+			shoot (main.x, main.y, main.x, main.y+1, poisonWave)
+
+
+			shoot (main.x, main.y, main.x+2, main.y-1, poisonWave)
+			shoot (main.x, main.y, main.x+1, main.y-2, poisonWave)
+			shoot (main.x, main.y, main.x+1, main.y-1, poisonWave)
+			shoot (main.x, main.y, main.x+1, main.y, poisonWave)
+			shoot (main.x, main.y, main.x, main.y-1, poisonWave)
+
+			shoot (main.x, main.y, main.x-2, main.y+1, poisonWave)
+			shoot (main.x, main.y, main.x-1, main.y+2, poisonWave)
+			shoot (main.x, main.y, main.x-1, main.y+1, poisonWave)
+			shoot (main.x, main.y, main.x, main.y, poisonWave)
+			shoot (main.x, main.y, main.x-1, main.y, poisonWave)
+
+			shoot (main.x, main.y, main.x-2, main.y-1, poisonWave)
+			shoot (main.x, main.y, main.x-1, main.y-2, poisonWave)
+			shoot (main.x, main.y, main.x-1, main.y-1, poisonWave)
+			shoot (main.x, main.y, main.x, main.y, poisonWave)
+			shoot (main.x, main.y, main.x-1, main.y, poisonWave)
+
+			poisonWave.dmg = poisonWave.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+		}
+
+		function powerShoot () {
+			power.dmg = power.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), power)
+			power.dmg = power.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+		}
+
+		function superBulletShoot () {
+			superBullet.dmg = superBullet.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), superBullet)
+			superBullet.dmg = superBullet.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+			main.v.x -= ((mousePos("x") - main.x)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*superBullet.recoil*1.5
+			main.v.y -= ((mousePos ("y") - main.y)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*superBullet.recoil*1.5
+		}
+
+		function bulletWaveShoot () {
+			bulletWave.dmg = bulletWave.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), bulletWave)
+
+			if (main.x < mousePos ("x")) {
+				if (main.y > mousePos ("y")){
+					var startAngle = -atan((mousePos("y")-main.y)/(mousePos("x")-main.x))
+				} else {
+					var startAngle = -atan((mousePos("y")-main.y)/(mousePos("x")-main.x)) + 2*PI
+				}
+			} else {
+				var startAngle = -atan((mousePos("y")-main.y)/(mousePos("x")-main.x)) + PI
+			}
+
+			shoot (main.x, main.y, cos(startAngle+0.025) + main.x, -sin(startAngle+0.025) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle+0.05) + main.x, -sin(startAngle+0.05) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle+0.1) + main.x, -sin(startAngle+0.1) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle+0.2) + main.x, -sin(startAngle+0.2) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle+0.4) + main.x, -sin(startAngle+0.4) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle+0.8) + main.x, -sin(startAngle+0.8) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle+1.6) + main.x, -sin(startAngle+1.6) + main.y, bulletWave)
+
+			shoot (main.x, main.y, cos(startAngle-0.025) + main.x, -sin(startAngle-0.025) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle-0.05) + main.x, -sin(startAngle-0.05) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle-0.1) + main.x, -sin(startAngle-0.1) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle-0.2) + main.x, -sin(startAngle-0.2) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle-0.4) + main.x, -sin(startAngle-0.4) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle-0.8) + main.x, -sin(startAngle-0.8) + main.y, bulletWave)
+			shoot (main.x, main.y, cos(startAngle-1.6) + main.x, -sin(startAngle-1.6) + main.y, bulletWave)
+			
+			
+			bulletWave.dmg = bulletWave.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+		}
+
+		function burstShoot () {
+			if (burstContinue.value == 1) {
+				
+				if (burstContinue.timer%2 == 0) {
+					burst.dmg = burst.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+					shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), burst)
+					burst.dmg = burst.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+					main.v.x -= ((mousePos("x") - main.x)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*burst.recoil*1.5
+					main.v.y -= ((mousePos ("y") - main.y)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*burst.recoil*1.5
+				}
+				if (burstContinue.timer == 0) {
+					burstContinue.value = 0
+				}
+				burstContinue.timer--
+			}
+		}
+
+		function fastFireShoot () {
+			fastFire.dmg = fastFire.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), fastFire)
+			fastFire.dmg = fastFire.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+			main.v.x -= ((mousePos("x") - main.x)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*fastFire.recoil*1.5
+			main.v.y -= ((mousePos ("y") - main.y)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*fastFire.recoil*1.5
+		}
+
+		function debuffShoot () {
+			debuff.dmg = debuff.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), debuff)
+			debuff.dmg = debuff.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+		}
+
+		function stunBombShoot () {
+			stunBomb.dmg = stunBomb.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), stunBomb)
+			stunBomb.dmg = stunBomb.dmg*main.attack.bullet.dmg/main.attack.bullet.dmg
+		}
+
+		function fireballShoot () {
+			fireball.dmg = fireball.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), fireball)
+			fireball.dmg = fireball.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+			main.v.x -= ((mousePos("x") - main.x)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*fireball.recoil*1.5
+			main.v.y -= ((mousePos ("y") - main.y)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*fireball.recoil*1.5
+		}
+
+		function novaShoot () {
+			if (novaContinue.value == 1) {
+				//console.log (novaContinue.timer)
+				if (novaContinue.timer%35 == 0) {
+					nova.dmg = nova.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+					shoot (main.x, main.y, main.x+1, main.y+1, nova)
+					shoot (main.x, main.y, main.x+1, main.y, nova)
+					shoot (main.x, main.y, main.x, main.y+1, nova)
+
+					shoot (main.x, main.y, main.x-1, main.y-1, nova)
+					shoot (main.x, main.y, main.x, main.y-1, nova)
+					shoot (main.x, main.y, main.x-1, main.y, nova)
+
+					shoot (main.x, main.y, main.x+1, main.y-1, nova)
+					shoot (main.x, main.y, main.x-1, main.y+1, nova)
+					nova.dmg = nova.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+				}
+				if (novaContinue.timer == 0) {
+					novaContinue.value = 0
+				}
+				novaContinue.timer--
+			}
+		}
+
+		function tStrikeShoot () {
+			if (tStrikeContinue.value == 1) {
+				if (tStrikeContinue.timer%15 == 0) {
+					explodeCall (mousePos ("x"), mousePos ("y"), 400, 200, 3, {type: "stun", duration: 15, intensity: null})
+				}
+				if (tStrikeContinue.timer == 0) {
+					tStrikeContinue.value = 0
+				}
+				tStrikeContinue.timer--
+			}
+		}
+
+		function rocketStormShoot () {
+			if (rocketStormContinue.value == 1) {
+				if (rocketStormContinue.timer%2 == 0) {
+					rocket.dmg = rocket.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+					shoot (main.x, main.y, mousePos("x"), mousePos("y"), rocket)
+					shoot (main.x, main.y, mousePos("x"), mousePos("y"), rocket)
+					shoot (main.x, main.y, mousePos("x"), mousePos("y"), rocket)
+					shoot (main.x, main.y, mousePos("x"), mousePos("y"), rocket)
+					rocket.dmg = rocket.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+					main.v.x -= ((mousePos("x") - main.x)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*rocket.recoil*1.5
+					main.v.y -= ((mousePos ("y") - main.y)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*rocket.recoil*1.5
+
+				}
+				if (rocketStormContinue.timer == 0) {
+					rocketStormContinue.value = 0
+				}
+				rocketStormContinue.timer--
+			}
+		}
+
+		function banishShoot () {
+			if (banishContinue.value == 1) {
+				if (banishContinue.timer%5 == 0) {
+					banish.dmg = banish.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+					shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), banish)
+					banish.dmg = banish.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+					main.v.x -= ((mousePos("x") - main.x)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*banish.recoil*1.5
+					main.v.y -= ((mousePos ("y") - main.y)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*banish.recoil*1.5
+				}
+				if (banishContinue.timer == 0) {
+					banishContinue.value = 0
+				}
+				banishContinue.timer--
+			}
+		}
+
+		function instaKillShoot () {
+			instaKill.dmg = instaKill.dmg*main.attack.bullet.dmg/main.attack.bullet.regDmg
+			shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), instaKill)
+			instaKill.dmg = instaKill.dmg*main.attack.bullet.regDmg/main.attack.bullet.dmg
+		}
+
+		function instaReload () {
+			main.attack.ammoLeft = main.attack.ammo
+		}
+
+		function mainReload () {
+			if (keys.r == 1 && main.reload.ing == 0 && main.attack.ammoLeft < main.attack.ammo) {
+				main.reload.ing = 1
+				main.reload.timer = main.attack.reload
+			}
+
+			if (main.reload.ing == 1) {
+				main.reload.timer--
+				if (main.reload.timer == 0) {
+					main.attack.ammoLeft = main.attack.ammo
+					main.reload.ing = 0
+				}
+			}
+		}
+
+
+		//make healing faster
+		function mainHeal() {
+			if (keys.e == 1) {
+				if (main.ability.heal.firstTime == 0) {
+					main.ability.heal.firstTime = 1
+					main.v.increase = main.v.increase*main.ability.heal.slowdown
+					main.v.max = main.v.max*main.ability.heal.slowdown
+				}
+				main.ability.heal.timer++
+				if (main.ability.heal.timer == main.ability.heal.target) {
+					main.ability.heal.timer = 0
+					main.hp.left += main.ability.heal.amount
+					effectCreate (main, main.ability.heal.regen)
+				}
+				healSpeedLimit ()
+			} else {
+				if (main.ability.heal.firstTime == 1) {
+					main.ability.heal.firstTime = 0
+					main.ability.heal.timer = 0
+					main.v.increase = main.v.increase/main.ability.heal.slowdown
+					main.v.max = main.v.max/main.ability.heal.slowdown
+				}
+			}
+		}
+
+		function mainStatusUpdate () {
+			for (i = 0; i<main.statusDisplay.length; i++) {
+				main.statusDisplay[i].duration = 0
+				for (j = 0; j<main.status.length; j++) {
+					if (main.statusDisplay[i].type == main.status[j].type && main.status[j].type != null) {
+						if (main.statusDisplay[i].duration < main.status[j].duration) {
+							main.statusDisplay[i].duration = main.status[j].duration
+						}
+					}
+				}
+			}
+		}
+
+		//fix mouse
+		function mousePos (x) {
+			if (x == "x") {
+				return (main.x + mouseX-screen.width/2)
+			} else if (x == "y") {
+				return (main.y + mouseY-screen.height/2)
+			}
+		}
+		
+		//camera movement
+		function pan () {
+
+			translate ((-main.x+screen.width/2), (-main.y + screen.height/2))
+		}
+		
+		//draw
+		function allDraw () {
+			
+
+			push()
+				pan ()
+				bulletDraw ()
+				explodeDraw ()
+				
+				//image (backgroundImg, boxSize.w/2, boxSize.h/2, boxSize.w, boxSize.h)
+				borderDraw ()
+				if (stage != 2.75 && stage != 1.5) {
+					mainDraw ()
+				}
+				enemyDraw()
+				
+
+			pop ()
+
+			uiDraw ()
+		}
+
+		function uiDraw () {
+			push ()
+			if (stage == 2.75) {
+				stroke (255,0,0)
+			} else {
+				stroke (0)
+			}
+
+			translate (0, screen.height-710 * screen.width/1440)
+			scale (screen.width/1440)
+			
+
+			//healthbar
+			strokeWeight (3)
+			fill (255,255,255,0)
+			rect (432.5,600,575,70)
+
+
+
+			fill (255-255*(main.hp.left)/main.hp.max,255*(main.hp.left)/main.hp.max,0)
+
+			if (main.hp.left <= 0) {
+				fill (0)
+				textSize (30)
+				strokeWeight (0)
+				text ("0",720, 645)
+			} else {
+				rect (432.5, 600, 575*(main.hp.left)/main.hp.max, 70)
+				fill (0)
+				textSize (30)
+				strokeWeight (0)
+				text (floor(main.hp.left),720, 645)
+			}
+
+			//ability
+
+			fill (175)
+			strokeWeight (3)
+			rect (1075,600,70,70)
+
+			rect (1200,600,70,70)
+
+			rect (1325,600,70,70)
+
+			tint (0,0,0,255)
+			image (abilitySymbol[0][selectedAbility[0]],1110, 635, 60, 60)
+
+			image (abilitySymbol[1][selectedAbility[1]],1235, 635, 60, 60)
+
+			image (abilitySymbol[2][selectedAbility[2]],1360, 635, 60, 60)
+
+			noTint()
+			
+			
+			if (main.ability.t1.timer != 0) {
+				fill (100, 200)
+				rect (1075,600,70,70)
+				fill (0)
+				strokeWeight (0)
+				textSize (50)
+				text (floor (main.ability.t1.timer/30)+1, 1110,650)
+			}
+
+			if (main.ability.t2.timer != 0) {
+				fill (100, 200)
+				rect (1200,600,70,70)
+				fill (0)
+				strokeWeight (0)
+				textSize (50)
+				text (floor (main.ability.t2.timer/30)+1, 1235,650)
+			}
+			if (main.ability.t3.timer != 0) {
+				fill (100, 200)
+				rect (1325,600,70,70)
+				fill (0)
+				strokeWeight (0)
+				textSize (50)
+				text (floor (main.ability.t3.timer/30)+1, 1360,650)
+			}
+
+			//healing
+			fill (175)
+			strokeWeight (3)
+			rect (300, 600, 70, 70)
+			image (healSymbol, 335,635, 70, 70)
+			fill (100, 150)
+			rect (300, 670, 70, -70*main.ability.heal.timer/main.ability.heal.target)
+
+
+			//ammo
+
+			fill (175)
+			rect (50, 600, 200, 70)
+
+			fill (0)
+			textSize(40)
+			strokeWeight (0)
+
+			image (ammoSymbol, 82, 635, 50*0.67, 50)
+			textAlign(RIGHT)
+			if (selectedClass == 2) {
+				text (main.attack.ammoLeft + " / " + main.attack.ammo, 212, 650)
+			} else {
+				text (main.attack.ammoLeft + " / " + main.attack.ammo, 237, 650)
+			}
+			textAlign(CENTER)
+
+			if (main.reload.ing == 1) {
+				fill (100, 150)
+				rect (50, 600, 200*main.reload.timer/main.attack.reload, 70)
+			}
+
+			pop()
+
+
+			push ()
+
+			//scale ()
+
+			scale (screen.width/1440)
+
+			strokeWeight (3)
+			//effects on top left
+
+			var realA = -1
+			for (a = 0; a<main.statusDisplay.length; a++) {
+				if (main.statusDisplay[a].duration != 0) {
+					if (main.statusDisplay[a].type == "stun") {
+						fill ('#c7b299')
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[10], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "fire") {
+						fill ("#00ffa3")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[0], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "vulnerable") {
+						fill ("#6868e0")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[6], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "slow") {
+						fill ("#a67c52")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[2], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "weak") {
+						fill ("#a1ffa1")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[8], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "regen") {
+						fill ("#eb5eef")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[1], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "speed") {
+						fill ("#ffff00")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[3], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "shield") {
+						fill ("#005cff")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[7], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "strong") {
+						fill ("#f95858")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[9], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "spike") {
+						fill ("#ffffff")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[4], 140+realA*80, 60, 50, 50)
+					}
+					if (main.statusDisplay[a].type == "unspike") {
+						fill ("#a0a0a0")
+						strokeWeight (3)
+						rect (110+realA*80, 30, 60, 60)
+						image (effectSymbol[5], 140+realA*80, 60, 50, 50)
+					}
+					
+					if (main.statusDisplay[a].duration < 60) {
+						fill (100,150)
+						rect (110+realA*80, 30, 60, 60)
+						fill (0)
+						textSize (20)
+						strokeWeight (0)
+						text (floor (main.statusDisplay[a].duration/3)/10, 110+realA*80 + 30, 65)
+					}
+					realA++
+				}
+			}
+			strokeWeight (3)
+			if (stage == 2.75) {
+				stroke (255,0,0)
+			} else {
+				stroke (0)
+			}
+
+
+			//minimap
+
+			var minimapScale = ((boxSize.w/1440)/7)*0.2
+			fill (150)
+			rect (1440-boxSize.w*minimapScale - 20, 20, boxSize.w*minimapScale, boxSize.h*minimapScale)
+			strokeWeight (3)
+			stroke (0)
+			ellipse (main.x*minimapScale + 1440-boxSize.w*minimapScale - 20, main.y*minimapScale + 20, 7,7)
+
+			for (i = 0; i<enemy.length; i++) {
+				if (enemy[i].stage == 2 || enemy[i].stage == 1){
+					fill (255,0,0)
+					ellipse (enemy[i].x*minimapScale + 1440-boxSize.w*minimapScale - 20, enemy[i].y*minimapScale + 20, 7,7)
+				}
+			}
+			strokeWeight (3)
+
+			//timer
+			if (stage == 2.75) {
+				stroke (255,0,0)
+			} else {
+				stroke (0)
+			}
+
+			var timingSecs = String (floor (timingTimer/30)%60)
+			if (floor (timingTimer/30)%60 < 10) {
+				timingSecs = "0" + timingSecs
+			}
+			var timingMins = String (floor (timingTimer/1800))
+			fill (150)
+			rect (1270, 20 + boxSize.h*minimapScale, 150, 50)
+			fill (0)
+			strokeWeight (0)
+			textSize (35)
+			text (timingMins + ":" + timingSecs, 1345, 20 + boxSize.h*minimapScale + 37)
+			pop()
+			
+		}
+
+		
+		//borders
+		function borderDraw () {
+			fill (150)
+			
+			stroke (0,0,0,0)
+			
+			//left
+			rect (-2000, -2000, 2000, boxSize.h + 4000)
+			
+			//top
+			rect (-2000, -2000, boxSize.w + 4000, 2000)
+			
+			//right
+			rect (boxSize.w, -2000, 2000, boxSize.h + 4000)
+			
+			//bottom
+			rect (-2000, boxSize.h, boxSize.w + 4000, 2000)
+			
+			stroke (0)
+		}
+		
+		//main turret
+		function mainDraw () {
+			push()
+			translate (main.x, main.y)
+			if (main.x-mousePos("x") < 0) {
+				rotate(atan ((main.y-mousePos("y"))/(main.x-mousePos("x"))) + PI + PI/2)
+			} else {
+				rotate(atan ((main.y-mousePos("y"))/(main.x-mousePos("x"))) + PI/2)
+			}
+
+
+			for (a = 0; a<mainImgSet.length; a++) {
+				if (mainImgSet[a].type == "center") {
+					image (mainImgSet[a].name, 0,0, main.size, main.size)
+				}
+				if (mainImgSet[a].type == "barrel") {
+					image (mainImgSet[a].name, 0,0, main.size*mainImgSet[a].w, main.size*mainImgSet[a].h)
+				}
+			}
+			pop()
+		}//add new assets through new variables (remeember to preload images, remove need for .w and .h
+
+		function movement () {
+			//speed control
+			
+			if (keys.w == 1) {
+				if (main.v.y > -main.v.max){
+					main.v.y -= main.v.increase
+				} else {
+					main.v.y -= main.v.increase/7 + main.v.stable
+				}
+			}
+			
+			
+			if (keys.a == 1) {
+				if (main.v.x > -main.v.max){
+					main.v.x -= main.v.increase
+				} else {
+					main.v.x -= main.v.increase/7 + main.v.stable
+				}
+			}
+			
+			
+			if (keys.s == 1) {
+				if (main.v.y < main.v.max){
+					main.v.y += main.v.increase
+				} else {
+					main.v.y += main.v.increase/7 + main.v.stable
+				}
+			}
+			
+			
+			if (keys.d == 1) {
+				if (main.v.x < main.v.max){
+					main.v.x += main.v.increase
+				} else {
+					main.v.x += main.v.increase/7 + main.v.stable
+				}
+			}
+		}
+
+		function mainWallBounce () {
+			if (main.x < main.size/2) {
+				main.x = main.size/2
+				main.v.x = -0.5 * main.v.x
+			}
+			if (main.x > boxSize.w - main.size/2) {
+				main.x = boxSize.w - main.size/2
+				main.v.x = -0.5 * main.v.x
+			}
+			if (main.y < main.size/2) {
+				main.y = main.size/2
+				main.v.y = -0.5 * main.v.y
+			}
+			if (main.y > boxSize.h - main.size/2) {
+				main.y = boxSize.h - main.size/2
+				main.v.y = -0.5 * main.v.y
+			}
+		}
+
+		function stable () {
+			
+			if (main.v.x > 0.5) {
+				main.v.x -= main.v.stable
+			} else if (main.v.x < -0.5) {
+				main.v.x += main.v.stable
+			}
+			
+			if (main.v.y > 0.5) {
+				main.v.y -= main.v.stable
+			} else if (main.v.y < -0.5) {
+				main.v.y += main.v.stable
+			}
+			
+			if (main.v.y <= main.v.stable && main.v.y >= -main.v.stable) {
+				main.v.y = 0
+			} 
+			if (main.v.x <= main.v.stable && main.v.x >= -main.v.stable) {
+				main.v.x = 0
+			}
+		}
+
+		function strongStable () {
+			
+			if (main.v.x > 0.5) {
+				main.v.x -= main.v.increase
+			} else if (main.v.x < -0.5) {
+				main.v.x += main.v.increase
+			}
+			
+			if (main.v.y > 0.5) {
+				main.v.y -= main.v.increase
+			} else if (main.v.y < -0.5) {
+				main.v.y += main.v.increase
+			}
+			
+			if (main.v.y <= main.v.increase && main.v.y >= -main.v.increase) {
+				main.v.y = 0
+			} 
+			if (main.v.x <= main.v.increase && main.v.x >= -main.v.increase) {
+				main.v.x = 0
+			}
+		}
+
+		function healSpeedLimit () {
+			if (main.v.x > main.v.max) {
+				main.v.x -= main.v.increase*2.5
+			}
+			if (main.v.x < -main.v.max) {
+				main.v.x += main.v.increase*2.5
+			}
+			if (main.v.y > main.v.max) {
+				main.v.y -= main.v.increase*2.5
+			}
+			if (main.v.y < -main.v.max) {
+				main.v.y += main.v.increase*2.5
+			}
+		}//main.v.max changed when healing starts - no problems
+
+		function mainAttack () {
+			
+			if (keys.mouse == 1 && main.attack.timer == 0 && main.reload.ing == 0) {
+				
+				var a = 0
+
+				while (a<main.attack.shots){
+					shoot (main.x, main.y, mousePos ("x"), mousePos ("y"), main.attack.bullet)
+					
+					main.v.x -= ((mousePos("x") - main.x)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*main.attack.recoil*1.5
+					
+					main.v.y -= ((mousePos ("y") - main.y)/sqrt(sq(mousePos("x") - main.x)+sq(mousePos ("y") - main.y)))*main.attack.recoil*1.5
+
+					a++
+				}
+
+				main.attack.timer = main.attack.atsp
+				main.attack.ammoLeft--
+				
+				if (main.attack.ammoLeft == 0) {
+					main.reload.timer = main.attack.reload
+					main.reload.ing = 1
+				} 
+			}
+			
+			if (main.attack.timer != 0) {
+				main.attack.timer--
+			}
+		}
+
+		function mainEffects () {
+			for (a = 0; a<main.status.length; a++) {
+				if (main.status[a].type != null){
+					main.status[a].duration -- 
+					if (main.status[a].duration == 0) {
+						if (main.status[a].type == "stun") {
+							main.stunned = 0
+							main.status[a].type = null
+							for (l = 0; l<main.status[a]; l++) {
+								if (main.status[l].type == "stun") {
+									main.stunned = 1
+								}
+							}
+						} else if (main.status[a].type == "fire") {
+							main.hp.heal += main.status[a].intensity
+						} else if (main.status[a].type == "vulnerable" || main.status[a].type == "shield"){
+							main.hp.shieldVal = main.hp.shieldVal/(main.status[a].intensity)
+							//main.hp.bodyDmgShield = main.hp.bodyDmgShield/(main.status[a].intensity)
+						} else if (main.status[a].type == "slow" || main.status[a].type == "speed") {
+							main.v.increase = main.v.increase/main.status[a].intensity
+							main.v.max = main.v.max/main.status[a].intensity
+							if (main.attack.bullet != null && main.status[a].type == "speed"){
+								main.attack.bullet.speed = main.attack.bullet.speed/main.status[a].intensity
+							}
+						} else if (main.status[a].type == "weak" || main.status[a].type == "strong") {
+							main.attack.bullet.dmg = main.attack.bullet.dmg/main.status[a].intensity
+						} else if (main.status[a].type == "regen") {
+							main.hp.heal -= main.status[a].intensity
+						} else if (main.status[a].type == "spike" || main.status[a].type == "unspike") {
+							main.attack.bodyDamage = main.attack.bodyDamage/main.status[a].intensity
+						} 
+						main.status[a].type = null
+					}
+				}
+			}
+		}//includes effect removal
+
+		function damage (obj, x) {
+			obj.hp.left -= x * obj.hp.shieldVal
+		}
+
+
+		//keys
+		function keyPressed () {
+			if (key == "w"){
+				keys.w = 1
+			}
+			if (key == "a"){
+				keys.a = 1
+			}
+			if (key == "s"){
+				keys.s = 1
+			}
+			if (key == "d"){
+				keys.d = 1
+			}
+			if (key == "e"){
+				keys.e = 1
+			}
+			if (key == "r"){
+				keys.r = 1
+			}
+			if (key == "f"){
+				keys.f = 1
+			}
+			if (key == "q"){
+				keys.q = 1
+			}
+			if (key == 1){
+				keys.n1 = 1
+			}
+			if (key == 2){
+				keys.n2 = 1
+			}
+			if (key == 3){
+				keys.n3 = 1
+			}
+			if (key == "Backspace"){
+				keys.bs = 1
+			}
+		}
+
+		function keyReleased () {
+			if (key == "w"){
+				keys.w = 0
+			}
+			if (key == "a"){
+				keys.a = 0
+			}
+			if (key == "s"){
+				keys.s = 0
+			}
+			if (key == "d"){
+				keys.d = 0
+			}
+			if (key == "e"){
+				keys.e = 0
+			}
+			if (key == "r"){
+				keys.r = 0
+			}
+			if (key == "f"){
+				keys.f = 0
+			}
+			if (key == "q"){
+				keys.q = 0
+			}
+			if (key == 1){
+				keys.n1 = 0
+			}
+			if (key == 2){
+				keys.n2 = 0
+			}
+			if (key == 3){
+				keys.n3 = 0
+			}
+			if (key == "Backspace"){
+				keys.bs = 0
+			}
+		}
+
+		//add a key to return to full screen
+
+		function mousePressed () {
+			keys.mouse = 1
+		}
+		function mouseReleased () {
+			keys.mouse = 0
+		}
+		
+		//enemies
+		function enemyMain () {
+			for (i = 0; i<enemy.length; i++) {
+				if (Number.isNaN(enemy[i].x)) {
+					enemy[i].x = 500
+					enemy[i].y = 500
+					enemy[i].v.x = 0
+					enemy[i].v.y = 0
+				}
+
+				if (enemy[i].stage == 1) {
+					enemy[i].visuals.timer--
+					if (enemy[i].visuals.timer == 0) {
+						enemy[i].stage = 2
+					}
+				}
+
+
+				if (enemy[i].stage == 2) {
+					
+					if (enemy[i].stunned == 0) {
+						enemySeek (i)
+						//console.log (i)
+						enemyAttack (i)
+						//console.log (i)
+					} else {
+						enemyStable (i)
+					}
+
+					
+					enemyWallBounce (i)
+
+					if (dist(enemy[i].x, enemy[i].y, main.x - main.v.x, main.y - main.v.y)<(main.size/2)+(enemy[i].size/2)) {
+						collide(enemy[i], main)
+					} 
+
+					enemy[i].x += enemy[i].v.x
+					enemy[i].y += enemy[i].v.y
+					
+					enemyStatusUpdate (i)
+
+
+					enemy[i].hp.left += enemy[i].hp.heal
+
+					if (enemy[i].hp.left > enemy[i].hp.max) {
+						enemy[i].hp.left = enemy[i].hp.max
+					}
+					enemyEffects (i)
+					if (enemy[i].hp.left <= 0) {
+						enemy[i].hp.left = 0
+						enemy[i].stage = 2.5
+					}
+				}
+				if (enemy[i].stage == 2.5) {
+					enemy[i].status = [{type: null, duration: null, intensity: null},]
+					if (enemy[i].onDeath == null){
+						enemy[i].stage = 3
+						enemy[i].visuals.timer = deathTime
+					} else if (enemy[i].onDeath.type == "explode"){
+						explodeCall(enemy[i].x, enemy[i].y, enemy[i].onDeath.dmg, enemy[i].onDeath.radius, enemy[i].onDeath.kb, enemy[i].onDeath.effects)
+						enemy[i].stage = 0
+					}
+				}
+				if (enemy[i].stage == 3) {
+					enemy[i].visuals.timer--
+					if (enemy[i].visuals.timer == 0) {
+						enemy[i].stage = 0
+					}
+					
+				}
+			}
+		}
+
+		function enemyStable (x) {
+			if (enemy[x].v.x >= 0) {
+				enemy[x].v.x -= enemy[x].v.increase
+			} else if (enemy[x].v.x < 0) {
+				enemy[x].v.x += enemy[x].v.increase
+			}
+			
+			if (enemy[x].v.y >= 0) {
+				enemy[x].v.y -= enemy[x].v.increase
+			} else if (enemy[x].v.y < 0) {
+				enemy[x].v.y += enemy[x].v.increase
+			}
+			
+			if (enemy[x].v.y <= enemy[x].v.increase && enemy[x].v.y >= -enemy[x].v.increase) {
+				enemy[x].v.y = 0
+			} 
+			if (enemy[x].v.x <= enemy[x].v.increase && enemy[x].v.x >= -enemy[x].v.increase) {
+				enemy[x].v.x = 0
+			}
+		}
+
+		function enemyDraw () {
+			for (i = 0; i < enemy.length; i++){
+				if (enemy[i].stage == 1) {						
+					push()
+						tint (255,255*(spawnTime-enemy[i].visuals.timer)/spawnTime)
+
+						for (a = 0; a<enemy[i].visuals.imgSet.length; a++) {
+							if (enemy[i].visuals.imgSet[a].type == "center") {
+								image (enemy[i].visuals.imgSet[a].name,enemy[i].x, enemy[i].y, enemy[i].size, enemy[i].size)
+							}
+							if (enemy[i].visuals.imgSet[a].type == "barrel") {
+								image (enemy[i].visuals.imgSet[a].name, enemy[i].x, enemy[i].y, enemy[i].size*enemy[i].visuals.imgSet[a].w, enemy[i].size*enemy[i].visuals.imgSet[a].h)
+							}
+						}
+					pop()
+					enemy[i].visuals.rotate = 0
+					
+				}
+				if (enemy[i].stage == 2 || enemy[i].stage == 2.5) {
+					fill (200)
+					
+
+					push()
+						translate (enemy[i].x, enemy[i].y)
+						rotate (enemy[i].visuals.rotate)
+						for (a = 0; a<enemy[i].visuals.imgSet.length; a++) {
+							if (enemy[i].visuals.imgSet[a].type == "center") {
+								image (enemy[i].visuals.imgSet[a].name, 0,0, enemy[i].size, enemy[i].size)
+							}
+							if (enemy[i].visuals.imgSet[a].type == "barrel") {
+								image (enemy[i].visuals.imgSet[a].name, 0,0, enemy[i].size*enemy[i].visuals.imgSet[a].w, enemy[i].size*enemy[i].visuals.imgSet[a].h)
+							}
+							if (enemy[i].visuals.imgSet[a].type == "range") {
+								image (enemy[i].visuals.imgSet[a].name, 0,0, enemy[i].attack.range + 30, enemy[i].attack.range + 50)
+							}
+						}
+						
+					pop()
+
+					//health bar
+					
+					strokeWeight(0)
+					fill (255,0,0)
+					if (enemy[i].hp.left >= 0) {
+						rect (enemy[i].x - enemy[i].size/2 - 20, enemy[i].y - enemy[i].size/2 - 30, (enemy[i].size + 40)*enemy[i].hp.left/enemy[i].hp.max, 20)
+					}
+					strokeWeight(5)
+					stroke (0)
+					fill (0,0,0,0)
+					rect (enemy[i].x - enemy[i].size/2 - 20, enemy[i].y - enemy[i].size/2 - 30, enemy[i].size + 40, 20)
+					strokeWeight(0)
+
+					//status symbol
+					var realA = 0
+					for (a = 0; a<enemy[i].statusDisplay.length; a++) {
+						if (enemy[i].statusDisplay[a].duration != 0) {
+							if (enemy[i].statusDisplay[a].type == "stun") {
+								fill ('#c7b299')
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[10], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "fire") {
+								fill ("#00ffff")
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[0], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "vulnerable") {
+								fill ("#6868e0")
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[6], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "slow") {
+								fill ("#a67c52")
+								
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[2], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "weak") {
+								fill ("#a1ffa1")
+								
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[8], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "speed") {
+								fill ("#ffff00")
+								
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[3], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "regen") {
+								fill ("#eb5eef")
+								
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[1], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "shield") {
+								fill ("#005cff")
+								
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[7], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "strong") {
+								fill ("#f95858")
+								
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[9], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "spike") {
+								fill ("#ffffff")
+								
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[4], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							if (enemy[i].statusDisplay[a].type == "unspike") {
+								fill ("#a0a0a0")
+								
+								rect (enemy[i].x - enemy[i].size/2 - 20+realA*20, enemy[i].y - enemy[i].size/2 - 50, 15, 15)
+								image (effectSymbol[5], enemy[i].x - enemy[i].size/2 - 20+realA*20 + 7.5, enemy[i].y - enemy[i].size/2 - 50+7.5, 11, 11)
+							}
+							
+							realA++
+						}
+						
+					}
+
+				}
+				if (enemy[i].stage == 3) {
+					
+					push()
+						tint (255,255-255*(deathTime-enemy[i].visuals.timer)/deathTime)
+						push()
+							translate (enemy[i].x, enemy[i].y)
+							rotate (enemy[i].visuals.rotate)
+
+							for (a = 0; a<enemy[i].visuals.imgSet.length; a++) {
+								if (enemy[i].visuals.imgSet[a].type == "center") {
+									image (enemy[i].visuals.imgSet[a].name, 0,0, enemy[i].size, enemy[i].size)
+								}
+								if (enemy[i].visuals.imgSet[a].type == "barrel") {
+								image (enemy[i].visuals.imgSet[a].name, 0,0, enemy[i].size*enemy[i].visuals.imgSet[a].w, enemy[i].size*enemy[i].visuals.imgSet[a].h)
+							}
+							}
+						pop()
+
+						strokeWeight(5)
+						stroke (0,255-255*(deathTime-enemy[i].visuals.timer)/deathTime)
+						fill (0,0,0,0)
+						rect (enemy[i].x - enemy[i].size/2 - 20, enemy[i].y - enemy[i].size/2 - 30, enemy[i].size + 40, 20)
+
+						strokeWeight(0)
+						//fill (255,0,0,255-255*(deathTime-enemy[i].visuals.timer)/deathTime)
+						//rect (enemy[i].x - enemy[i].size/2 - 20, enemy[i].y - enemy[i].size/2 - 30, (enemy[i].size + 40)*enemy[i].hp.left/enemy[i].hp.max, 20)
+					pop()
+				
+				}
+			}
+		} //status symbol might be bugged + add new assets + fix bug that let health bar go negative
+		
+		function enemyCall () {
+			var rng = random()
+			var newX
+			var newY
+			var preVal = 0
+			for (i = 0; i<= enemyTypes.length; i++){
+				if (rng < enemyTypes[i].rngVal + preVal) {
+					rng = random() 
+					if (rng < screenRatio) {
+						rng = random() 
+						if (rng < 0.5) {
+							newX = enemyTypes[i].size + 10
+							newY = random(enemyTypes[i].size + 10, boxSize.h - enemyTypes[i].size)
+						} else {
+							newX = boxSize.w - enemyTypes[i].size - 10
+							newY = random(enemyTypes[i].size + 10, boxSize.h - enemyTypes[i].size)
+						}
+					} else {
+						rng = random() 
+						if (rng < 0.5) {
+							newX = random(enemyTypes[i].size + 10, boxSize.w - enemyTypes[i].size)
+							newY = enemyTypes[i].size + 10
+						} else {
+							newX = random(enemyTypes[i].size + 10, boxSize.w - enemyTypes[i].size)
+							newY = boxSize.h - enemyTypes[i].size - 10
+						}
+					}
+					enemyFind (i, newX, newY)
+					break
+				} else {
+					preVal += enemyTypes[i].rngVal
+				}
+			}
+		}
+
+		function enemyFind (type, x, y) {
+			for (i = 0; i<enemy.length; i++) {
+				if (enemy[i].stage == 0) {
+					enemyAssign(type, i, x, y)
+					break
+				} else if (i+1 == enemy.length) {
+					enemy.push (
+						{
+							stage: 0,
+
+							x: 500,
+							y: 500,
+				
+
+							size: 100,
+							weight: 100,
+
+							status: [{
+								type: null,
+								duration: null,
+								intensity: null
+							},
+							],
+
+							stunned: 0,
+
+							t: {
+								x: 0,
+								y: 0,
+								spin: {
+									radius: 100,
+									v: 3,
+									pos: 0,
+								}
+					
+							},
+							
+							v: {
+								x: 0,
+								y: 0,
+								max: 30,
+								increase: 1,
+							},
+
+							attack: {
+								timer: 0,
+								bodyDamage: 0,
+								targeting: "ranged",
+								ammoLeft: 50,
+								range: 1000,
+								reload: 15,
+								atsp: 1,
+								ammo: 50,
+								shots: 4,
+								recoil: 0.1,
+					
+
+								bullet: {
+									target: 0,
+									accuracy: 120,
+									dmg: 20,
+									weight: 0,
+									speed: 40,
+									range: 2000,
+									size: 15,
+
+									explode: {
+										radius: 100,
+										kb: 1,
+									},
+									visuals: {
+										color: 'red',
+										borderWidth: 0,
+										border: 'red',
+									},
+									effects: [null, null]
+								},
+							},
+				
+							hp: {
+								left: 1500,
+								max: 1500,
+								heal: 0,
+								shieldVal: 0.75,
+								bodyDmgShield: 1,
+							},
+
+							visuals: {
+								rotate: 0,
+								timer: 0,
+								timt: 255,
+								imgSet: [
+									{
+										type: "null",
+										name: null,
+										x: 0,
+										y: 0,
+									}
+								],
+							},
+							onDeath: {
+								type: "explode",
+								dmg: 100,
+								radius: 100,
+								kb: 1,
+								size: 100,
+								effects: []
+							},
+							statusDisplay: [
+								{
+									type: "fire",
+									duration: 0,
+								},
+								{
+									type: "stun",
+									duration: 0,
+								},
+								{
+									type: "vulnerable",
+									duration: 0,
+								},
+								{
+									type: "slow",
+									duration: 0,
+								},
+								{
+									type: "weak",
+									duration: 0,
+								},
+								{
+									type: "regen",
+									duration: 0,
+								},
+								{
+									type: "speed",
+									duration: 0,
+								},
+								{
+									type: "shield",
+									duration: 0,
+								},
+								{
+									type: "strong",
+									duration: 0,
+								},
+								{
+									type: "spike",
+									duration: 0,
+								},
+								{
+									type: "unspike",
+									duration: 0,
+								},
+							],
+							
+						},
+					)
+					enemyAssign(type, i+1, x, y)
+					break
+				}
+			}
+		}
+
+		function enemyAssign (type, i, x, y) {
+			var t = enemyTypes[type]
+			var e = enemy[i]
+
+			
+			e.stage = 1
+			e.x = x
+			e.y = y
+
+			e.status = [{type: null, duration: null, intensity: null},]
+
+			e.stunned = 0
+
+			e.v.x = 0
+			e.v.y = 0
+
+
+
+			e.size = t.size
+			e.weight = t.weight
+
+			e.t.spin.radius = t.t.spin.radius
+			e.t.spin.v = t.t.spin.v
+
+			e.v.max = t.v.max
+			e.v.increase = t.v.increase
+
+			e.attack.bullet.range = t.attack.bullet.range
+			e.attack.bullet.speed = t.attack.bullet.speed
+			e.attack.bullet.explode = t.attack.bullet.explode
+			e.attack.bullet.dmg = t.attack.bullet.dmg
+			e.attack.bullet.accuracy = t.attack.bullet.accuracy
+			e.attack.bullet.size = t.attack.bullet.size
+			e.attack.bullet.visuals = t.attack.bullet.visuals
+			e.attack.bullet.effects = t.attack.bullet.effects
+
+
+			e.attack.targeting = t.attack.targeting
+			e.attack.bodyDamage = t.attack.bodyDamage
+			e.attack.range = t.attack.range
+			e.attack.reload = t.attack.reload
+			e.attack.atsp = t.attack.atsp
+			e.attack.ammo = t.attack.ammo
+			e.attack.ammoLeft = t.attack.ammo
+			e.attack.shots = t.attack.shots
+			e.attack.recoil = t.attack.recoil
+			e.attack.timer = 0
+
+			e.hp.left = t.hp.max
+			e.hp.max = t.hp.max
+			e.hp.heal = t.hp.heal
+			e.hp.shieldVal = t.hp.shieldVal
+			e.hp.bodyDmgShield = t.hp.bodyDmgShield
+			e.hp.heal = 0
+
+			e.visuals.imgSet = t.visuals.imgSet
+
+			e.visuals.timer = spawnTime
+
+			e.onDeath = t.onDeath
+
+			e.statusDisplay = [
+				{
+					type: "fire",
+					duration: 0,
+				},
+				{
+					type: "stun",
+					duration: 0,
+				},
+				{
+					type: "vulnerable",
+					duration: 0,
+				},
+				{
+					type: "slow",
+					duration: 0,
+				},
+				{
+					type: "weak",
+					duration: 0,
+				},
+				{
+					type: "regen",
+					duration: 0,
+				},
+				{
+					type: "speed",
+					duration: 0,
+				},
+				{
+					type: "shield",
+					duration: 0,
+				},
+				{
+					type: "strong",
+					duration: 0,
+				},
+				{
+					type: "spike",
+					duration: 0,
+				},
+				{
+					type: "unspike",
+					duration: 0,
+				},
+			]
+			
+		}
+	
+		function enemyWallBounce (x) {
+			
+			if (enemy[x].x <= enemy[x].size/2) {
+				enemy[x].x = enemy[x].size/2
+				enemy[x].v.x = -0.5 * enemy[x].v.x
+			}
+			if (enemy[x].x >= boxSize.w - enemy[x].size/2) {
+				enemy[x].x = boxSize.w - enemy[x].size/2
+				enemy[x].v.x = -0.5 * enemy[x].v.x
+			}
+			if (enemy[x].y <= enemy[x].size/2) {
+				enemy[x].y = enemy[x].size/2
+				enemy[x].v.y = -0.5 * enemy[x].v.y
+			}
+			if (enemy[x].y >= boxSize.h - enemy[x].size/2) {
+				enemy[x].y = boxSize.h - enemy[x].size/2
+				enemy[x].v.y = -0.5 * enemy[x].v.y
+			}
+			
+		}
+
+		function enemySeek (x) {
+			//target Update
+			if (enemy[x].t.spin.pos < 360) {
+				enemy[x].t.spin.pos += enemy[x].t.spin.v;
+			} else {
+				enemy[x].t.spin.pos = 0;
+			}
+			enemy[x].t.x = (cos (radians(enemy[x].t.spin.pos))*enemy[x].t.spin.radius)+ main.x;
+			enemy[x].t.y = (sin (radians(enemy[x].t.spin.pos))*enemy[x].t.spin.radius)+ main.y;
+			
+			//turret movement
+			
+			if (enemy[x].v.max*-(enemy[x].x - enemy[x].t.x)/sqrt(sq(enemy[x].y - enemy[x].t.y)+ sq(enemy[x].x - enemy[x].t.x))<enemy[x].v.x) {
+				enemy[x].v.x-= enemy[x].v.increase;
+			} else {
+				enemy[x].v.x+= enemy[x].v.increase;
+			}
+			
+			if (enemy[x].v.max*-(enemy[x].y - enemy[x].t.y)/sqrt(sq(enemy[x].y - enemy[x].t.y)+ sq(enemy[x].x - enemy[x].t.x))	<enemy[x].v.y) {
+				enemy[x].v.y-= enemy[x].v.increase;
+			} else {
+				enemy[x].v.y+= enemy[x].v.increase;
+			}
+			
+		}
+
+		function enemyAttack (x) {
+			if (enemy[x].attack.targeting == "ranged") {
+				if (main.x-enemy[x].x < 0) {
+					enemy[x].visuals.rotate = atan ((main.y-enemy[x].y)/(main.x-enemy[x].x)) + PI;
+				} else {
+					enemy[x].visuals.rotate = atan ((main.y-enemy[x].y)/(main.x-enemy[x].x))
+				}
+				if (enemy[x].attack.timer == 0 && dist(enemy[x].x, enemy[x].y, main.x, main.y)<enemy[x].attack.range) {
+					var a = 0
+					while (a<enemy[x].attack.shots){
+						shoot (enemy[x].x, enemy[x].y, main.x, main.y, enemy[x].attack.bullet)
+						
+						enemy[x].v.x -= ((main.x - enemy[x].x)/sqrt(sq(main.x - enemy[x].x)+sq(main.y - enemy[x].y)))*enemy[x].attack.recoil*1.5
+					
+						enemy[x].v.y -= ((main.y - enemy[x].y)/sqrt(sq(main.x - enemy[x].x)+sq(main.y - enemy[x].y)))*enemy[x].attack.recoil*1.5
+						
+						a++
+					}
+					
+					enemy[x].attack.timer = enemy[x].attack.atsp
+					enemy[x].attack.ammoLeft--
+				
+					if (enemy[x].attack.ammoLeft == 0) {
+						enemy[x].attack.timer = enemy[x].attack.reload
+					} 
+				}
+			
+				if (enemy[x].attack.timer != 0) {
+					enemy[x].attack.timer--
+					if (enemy[x].attack.timer == 0 && enemy[x].attack.ammoLeft == 0){
+						enemy[x].attack.ammoLeft = enemy[x].attack.ammo
+					}
+				}
+			} else if (enemy[x].attack.targeting == "spin"){
+				if (dist(main.x, main.y, enemy[x].x, enemy[x].y)<enemy[x].size*3) {
+					enemy[x].visuals.rotate += 0.75
+				}
+			} else if (enemy[x].attack.targeting == "buff") {
+				
+				for (p = 0; p<enemy.length; p++) {
+
+					if (dist (enemy[x].x, enemy[x].y, enemy[p].x, enemy[p].y) < enemy[x].attack.range - 50) {
+							//console.log (enemy[x].attack.bullet.effects[q])
+						effectCreate (enemy[p], enemy[x].attack.bullet.effects)
+						
+					}
+				}
+			}
+		}
+		
+		//collide
+		function collide (obj2,obj1) {
+			/*
+			var xa = x.x
+			var ya = x.y
+			var xb = y.x
+			var yb = y.y
+			
+			if (xa == xb) {
+				xa += 1
+			}
+			if (ya == yb) {
+				ya += 1
+			}
+
+			var vxa = x.v.x
+			var vya = x.v.y
+
+			var vxb = y.v.x
+			var vyb = y.v.y
+			
+			var va = sqrt (sq(x.v.x) + sq(x.v.y))
+			var vb = sqrt (sq(y.v.x) + sq(y.v.y))
+			
+			var angle = atan((ya-yb)/(xa-xb))
+
+
+			
+			var aco = y.weight/(x.weight+y.weight) + 0.5
+			
+			var bco = x.weight/(x.weight+y.weight) + 0.5
+			
+			
+			
+			//left side
+			if (y.x-x.x < 0){
+				if (x.y<y.y){
+					//bottom left
+					x.v.y = ((va+vb)*sin(angle)/2)*aco
+					x.v.x = ((va+vb)*cos(angle)/2)*aco
+				
+					y.v.y = ((va+vb)*sin(angle)/2)*-bco
+					y.v.x = ((va+vb)*cos(angle)/2)*-bco
+				} else {
+					//top left
+					x.v.y = ((va+vb)*sin(angle)/2)*aco
+					x.v.x = ((va+vb)*cos(angle)/2)*aco
+				
+					y.v.y = ((va+vb)*sin(angle)/2)*-bco
+					y.v.x = ((va+vb)*cos(angle)/2)*-bco
+				}
+			} else {
+				//right side
+				if (x.y<y.y){
+					//bottom right
+					x.v.y = ((va+vb)*sin(angle)/2)*-aco
+					x.v.x = ((va+vb)*cos(angle)/2)*-aco
+				
+					y.v.y = ((va+vb)*sin(angle)/2)*+bco
+					y.v.x = ((va+vb)*cos(angle)/2)*+bco
+				} else {
+					//top right
+					x.v.y = ((va+vb)*sin(angle)/2)*-aco
+					x.v.x = ((va+vb)*cos(angle)/2)*-aco
+				
+					y.v.y = ((va+vb)*sin(angle)/2)*bco
+					y.v.x = ((va+vb)*cos(angle)/2)*bco
+				}
+			}
+			*/
+
+			var vCollision = {x: obj2.x - obj1.x, y: obj2.y - obj1.y};
+			var distance = Math.sqrt((obj2.x-obj1.x)*(obj2.x-obj1.x) + (obj2.y-obj1.y)*(obj2.y-obj1.y))
+			var vCollisionNorm = {x: vCollision.x / distance, y: vCollision.y / distance}
+
+			let vRelativeVelocity = {x: obj1.v.x - obj2.v.x, y: obj1.v.y - obj2.v.y}
+			let speed = vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y
+			let impulse = 2 * speed / (obj1.weight + obj2.weight);
+
+
+			if (speed > 0) {
+				obj1.v.x -= (speed * vCollisionNorm.x);
+				obj1.v.y -= (speed * vCollisionNorm.y);
+				obj2.v.x += (speed * vCollisionNorm.x);
+				obj2.v.y += (speed * vCollisionNorm.y);
+			}
+
+			
+			//for debugging
+			/*
+			//line (obj1.x-cos(angle)*1000, obj1.y-sin(angle)*1000, obj1.x+cos(angle)*1000, obj1.y+sin(angle)*1000)
+			strokeWeight (5)
+
+			//enemy
+			stroke (255,0,0)
+			line (obj2.x, obj2.y, obj2.x+obj2.v.x*100, (obj2.y+obj2.v.y*100))
+			
+			//self
+			stroke (0,0,255)
+			line (obj1.x, obj1.y, obj1.x+obj1.v.x*100, (obj1.y+obj1.v.y*100))
+			
+			strokeWeight (1)
+			stroke (0,0,0)
+			
+			//setTimeout (function () {alert ("pause")}, 1)
+			
+			*/
+			damage (obj1, obj2.attack.bodyDamage*obj1.hp.bodyDmgShield)
+			damage (obj2, obj1.attack.bodyDamage*obj2.hp.bodyDmgShield)
+		}//fix the collide function
+		
+		//bulets
+		function shoot (x, y, tx, ty, stats) {
+
+			var newX = tx+(Math.random()-0.5)*stats.accuracy
+			var newY = ty+(Math.random()-0.5)*stats.accuracy
+
+			for (l = 0; l<bullet.length; l++) {
+				if (bullet[l].fly == false) {
+					bullet[l].fly = true
+
+					bullet[l].x = x
+					bullet[l].y = y
+					
+					bullet[l].vx = stats.speed*(newX - x)/sqrt(sq(newX - x)+sq(newY - y))
+					bullet[l].vy = stats.speed*(newY - y)/sqrt(sq(newX - x)+sq(newY - y))
+					
+					
+
+					bullet[l].dmg = stats.dmg
+					bullet[l].target = stats.target
+					bullet[l].size = stats.size
+					bullet[l].range = stats.range
+					bullet[l].travel = 0
+					
+					bullet[l].explosive = stats.explode
+					bullet[l].weight = stats.weight
+					bullet[l].effects = stats.effects
+					bullet[l].visuals = stats.visuals
+
+					break
+				} else {
+					if (l+1 == bullet.length) {
+						
+						bullet.push (
+							{
+								fly: true,
+								x: x,
+								y: y,
+								vx: stats.speed*(newX - x)/sqrt(sq(newX - x)+sq(newY - y)),
+								vy: stats.speed*(newY - y)/sqrt(sq(newX - x)+sq(newY - y)),
+								dmg: stats.dmg,
+								target: stats.target,
+								size: stats.size,
+								range: stats.range,
+								travel: 0,
+								weight: stats.weight,
+								explosive: stats.explode,
+								effects: stats.effects,
+								visuals: stats.visuals
+							}
+						)
+						break
+						
+					}
+				}
+				
+			}
+		}
+
+		function bulletFly () {
+
+			for (i = 0; i<bullet.length; i++) {
+				if (bullet[i].fly == true) {
+					bullet[i].x += bullet[i].vx
+					bullet[i].y += bullet[i].vy
+					
+					//dissapear off screen
+					if (bullet[i].x < -20 || bullet[i].x>boxSize.w + 20 || bullet[i].y < -20 || bullet[i].y > boxSize.h + 20) {
+						bullet[i].fly = false
+						
+						if (bullet[i].explosive != false) {
+							explodeCall (bullet[i].x, bullet[i].y, bullet[i].dmg, bullet[i].explosive.radius, bullet[i].explosive.kb, bullet[i].effects)
+						}
+					}
+
+					
+					//bullet range
+					bullet[i].travel += sqrt(sq(bullet[i].vx) + sq(bullet[i].vy))
+					if (bullet[i].travel > bullet[i].range) {
+						bullet[i].size -= 2
+					}
+					if (bullet[i].size <= 0) {
+						bullet[i].fly = false
+						if (bullet[i].explosive != false) {
+							explodeCall (bullet[i].x, bullet[i].y, bullet[i].dmg, bullet[i].explosive.radius, bullet[i].explosive.kb, bullet[i].effects)
+						}
+					}
+					
+					//bullet hit
+					if (bullet[i].explosive == false){
+						if (bullet[i].target == 1){
+							for (a = 0; a<enemy.length; a++){
+								if (dist (bullet[i].x, bullet[i].y, enemy[a].x, enemy[a].y)<bullet[i].size/5+(enemy[a].size)/2 && enemy[a].stage == 2) {
+									bullet[i].fly = false
+									enemy[a].v.x += bullet[i].vx*bullet[i].weight*0.1
+									enemy[a].v.y += bullet[i].vy*bullet[i].weight*0.1
+									damage(enemy[a], bullet[i].dmg)
+									if (enemy[a].hp.left < 0) {
+										enemy[a].stage = 2.5
+										enemy[a].hp.left = 0
+									}
+									effectCreate (enemy[a], bullet[i].effects)
+									break
+								}
+							}
+						} else if (bullet[i].target == 0) {
+							if (dist (bullet[i].x, bullet[i].y, main.x, main.y)<bullet[i].size/5+(main.size)/2) {
+								bullet[i].fly = false
+								main.vx += bullet[i].vx*bullet[i].weight*0.1
+								main.vy += bullet[i].vy*bullet[i].weight*0.1
+								damage(main, bullet[i].dmg)
+								effectCreate (main, bullet[i].effects)
+							}
+						}
+					} else {
+						if (bullet[i].target == 1) {
+							for (a = 0; a<enemy.length; a++){
+								if (dist (bullet[i].x, bullet[i].y, enemy[a].x, enemy[a].y)<(bullet[i].size+enemy[a].size)/2 && enemy[a].stage == 2) {
+									bullet[i].fly = false
+									explodeCall (bullet[i].x, bullet[i].y, bullet[i].dmg, bullet[i].explosive.radius, bullet[i].explosive.kb, bullet[i].effects)
+									break
+								}
+							}
+						} else {
+							if (dist (bullet[i].x, bullet[i].y, main.x, main.y)<(bullet[i].size+main.size)/2){
+								bullet[i].fly = false
+								explodeCall (bullet[i].x, bullet[i].y, bullet[i].dmg, bullet[i].explosive.radius, bullet[i].explosive.kb, bullet[i].effects)
+							}
+						}
+					}
+					
+				}
+			}
+		}
+
+		function bulletDraw () {
+			for (i = 0; i< bullet.length; i++) {
+				if (bullet[i].fly == true) {
+
+					fill(bullet[i].visuals.color)
+					strokeWeight(bullet[i].visuals.borderWidth)
+					stroke(bullet[i].visuals.border)
+
+					ellipse (bullet[i].x, bullet[i].y, bullet[i].size, bullet[i].size)
+				}
+			}
+		}
+
+
+		//explode
+		function explodeCall (x, y, dmg, radius, kb, effects) {
+			for (var j = 0; j<explosion.length; j++){
+				if (explosion[j].exp == false) {
+					explosion[j].exp = true
+					explosion[j].x = x
+					explosion[j].y = y
+					explosion[j].dmg = dmg
+					explosion[j].radius = radius
+					explosion[j].kb = kb
+					explosion[j].timer = expFrames
+					explosion[j].effects = effects
+					break
+				} else if (j+1 == explosion.length){
+					explosion.push (
+						{
+							exp: true,
+							x: x,
+							y: y,
+							dmg: dmg,
+							radius: radius,
+							kb: kb,
+							timer: expFrames,
+							effects: effects
+						}
+					)
+					break
+				}
+			}
+		}
+		
+		function explode () {
+			for (i = 0; i<explosion.length; i++) {
+				if (explosion[i].exp == true) {
+					if (explosion[i].timer == expFrames) {
+						for (a = 0; a<enemy.length; a++) {
+							if (dist(enemy[a].x, enemy[a].y, explosion[i].x, explosion[i].y)<explosion[i].radius + enemy[a].size/2){
+								damage(enemy[a], explosion[i].dmg)
+								effectCreate (enemy[a], explosion[i].effects)
+								if (enemy[a].x > explosion[i].x){
+									if (enemy[a].y > explosion[i].y){
+										//explosion on top left
+										enemy[a].v.x += explosion[i].kb * (explosion[i].radius + enemy[a].size/2 - (enemy[a].y - explosion[i].y))/10
+										enemy[a].v.y += explosion[i].kb * (explosion[i].radius + enemy[a].size/2 - (enemy[a].x - explosion[i].x))/10
+									} else {
+										//explosion on bottom left
+										enemy[a].v.x += explosion[i].kb * (explosion[i].radius + enemy[a].size/2 + (enemy[a].y - explosion[i].y))/10
+										enemy[a].v.y -= explosion[i].kb * (explosion[i].radius + enemy[a].size/2 - (enemy[a].x - explosion[i].x))/10
+									}
+								} else {
+									if (enemy[a].y > explosion[i].y){
+										//explosion on top right
+										enemy[a].v.x -= explosion[i].kb * (explosion[i].radius + enemy[a].size/2 - (enemy[a].y - explosion[i].y))/10
+										enemy[a].v.y += explosion[i].kb * (explosion[i].radius + enemy[a].size/2 + (enemy[a].x - explosion[i].x))/10
+									} else {
+										//explosion on bottom right
+										enemy[a].v.x -= explosion[i].kb * (explosion[i].radius + enemy[a].size/2 + (enemy[a].y - explosion[i].y))/10
+										enemy[a].v.y -= explosion[i].kb * (explosion[i].radius + enemy[a].size/2 + (enemy[a].x - explosion[i].x))/10
+									}
+								}
+							}
+						}
+						if (dist(main.x, main.y, explosion[i].x, explosion[i].y)<explosion[i].radius + main.size/2){
+							damage(main, explosion[i].dmg)
+							effectCreate (main, explosion[i].effects)
+							if (main.x > explosion[i].x){
+								if (main.y > explosion[i].y){
+									//explosion on top left
+									main.v.x += explosion[i].kb * (explosion[i].radius + main.size/2 - (main.y - explosion[i].y))/10
+									main.v.y += explosion[i].kb * (explosion[i].radius + main.size/2 - (main.x - explosion[i].x))/10
+								} else {
+										//explosion on bottom left
+									main.v.x += explosion[i].kb * (explosion[i].radius + main.size/2 + (main.y - explosion[i].y))/10
+									main.v.y -= explosion[i].kb * (explosion[i].radius + main.size/2 - (main.x - explosion[i].x))/10
+									}
+							} else {
+								if (main.y > explosion[i].y){
+									//explosion on top right
+									main.v.x -= explosion[i].kb * (explosion[i].radius + main.size/2 - (main.y - explosion[i].y))/10
+									main.v.y += explosion[i].kb * (explosion[i].radius + main.size/2 + (main.x - explosion[i].x))/10
+								} else {
+										//explosion on bottom right
+									main.v.x -= explosion[i].kb * (explosion[i].radius + main.size/2 + (main.y - explosion[i].y))/10
+									main.v.y -= explosion[i].kb * (explosion[i].radius + main.size/2 + (main.x - explosion[i].x))/10
+								}
+							}
+						}
+					}
+					
+					explosion[i].timer --
+					if (explosion[i].timer == 0) {
+						explosion[i].exp = false
+					}
+				}
+			}
+		}
+
+		function explodeDraw () {
+			for (i = 0; i< explosion.length; i++) {
+				if (explosion[i].exp == true) {
+					var toDraw = floor((expFrames - explosion[i].timer)/2)
+					image (explosionFrames[toDraw], explosion[i].x, explosion[i].y, explosion[i].radius*4.5, explosion[i].radius*4.5)
+				}
+			}
+		}
+
+		//effects
+
+		function effectCreate (target, effects) {
+			for (j = 0; j< effects.length; j++){
+				if (effects[j].type == "stun"){
+					target.stunned = 1
+				}
+				if (effects[j].type == "fire") {
+					target.hp.heal -= effects[j].intensity
+				}
+				if (effects[j].type == "vulnerable" || effects[j].type == "shield") {
+					target.hp.shieldVal = (effects[j].intensity)*target.hp.shieldVal
+					//target.hp.bodyDmgShield = (effects[j].intensity)*target.hp.bodyDmgShield
+				}
+				if (effects[j].type == "slow" || effects[j].type == "speed") {
+					target.v.increase = target.v.increase*effects[j].intensity
+					target.v.max = target.v.max*effects[j].intensity
+					if (target.attack.bullet != null && effects[j].type == "speed"){
+						target.attack.bullet.speed = target.attack.bullet.speed*effects[j].intensity
+					}
+				}
+				if (effects[j].type == "weak" ||  effects[j].type == "strong") {
+					if (target.attack.bullet != null){
+						target.attack.bullet.dmg = target.attack.bullet.dmg*effects[j].intensity
+					}
+				}
+
+				if (effects[j].type == "spike" || effects[j].type == "unspike") {
+					target.attack.bodyDamage = target.attack.bodyDamage*effects[j].intensity
+				}
+
+				if (effects[j].type == "regen") {
+					target.hp.heal += effects[j].intensity
+				}
+
+				for (b = 0; b<target.status.length; b++) {
+					if (target.status[b].type == null) {
+
+						target.status[b].type = effects[j].type
+						target.status[b].duration = effects[j].duration
+						target.status[b].intensity = effects[j].intensity
+						break
+					} else if (b+1 == target.status.length) {
+						target.status.push (
+						{
+							type: effects[j].type,
+							duration: effects[j].duration,
+							intensity: effects[j].intensity
+						}
+						)
+						
+						break
+					}
+				}
+			}
+		}
+
+		function enemyEffects (x) {
+			for (a = 0; a<enemy[x].status.length; a++) {
+				if (enemy[x].status[a] != null){
+					enemy[x].status[a].duration -- 
+					if (enemy[i].status[a].duration == 0) {
+
+						if (enemy[x].status[a].type == "stun") {
+							enemy[x].stunned = 0
+							for (l = 0; l<enemy[x].status[a]; l++) {
+								if (enemy[x].status[l].type == "stun") {
+									enemy[x].stunned = 1
+									break
+								}
+							}
+
+						} else if (enemy[x].status[a].type == "fire") {
+							enemy[x].hp.heal += enemy[x].status[a].intensity
+
+						} else if (enemy[x].status[a].type == "vulnerable" || enemy[x].status[a].type == "shield"){
+							enemy[x].hp.shieldVal = enemy[x].hp.shieldVal/(enemy[x].status[a].intensity)
+							//enemy[x].hp.bodyDmgShield = enemy[x].hp.bodyDmgShield/(enemy[x].status[a].intensity)
+
+						} else if (enemy[x].status[a].type == "slow" || enemy[x].status[a].type == "speed") {
+							enemy[x].v.increase = enemy[x].v.increase/enemy[x].status[a].intensity
+							enemy[x].v.max = enemy[x].v.max/enemy[x].status[a].intensity
+							if (enemy[x].attack.bullet != null && enemy[x].status[a].type == "speed"){
+								enemy[x].attack.bullet.speed = enemy[x].attack.bullet.speed/enemy[x].status[a].intensity
+							}
+						} else if (enemy[x].status[a].type == "weak" || enemy[x].status[a].type == "strong") {
+							if (enemy[x].attack.bullet != null) {
+								enemy[x].attack.bullet.dmg = enemy[x].attack.bullet.dmg/enemy[x].status[a].intensity
+							}
+						} else if (enemy[x].status[a].type == "regen") {
+							enemy[x].hp.heal -= enemy[x].status[a].intensity
+						} else if (enemy[x].status[a].type == "spike" || enemy[x].status[a].type == "unspike") {
+							enemy[x].attack.bodyDamage = enemy[x].attack.bodyDamage/enemy[x].status[a].intensity
+						}
+						enemy[x].status[a].type = null
+					}
+				}
+			}
+		}
+		
+		function enemyStatusUpdate (x) {
+			for (a = 0; a<enemy[x].statusDisplay.length; a++) {
+				enemy[x].statusDisplay[a].duration = 0
+				for (j = 0; j<enemy[x].status.length; j++) {
+					if (enemy[x].statusDisplay[a].type == enemy[x].status[j].type && enemy[x].status[j].type != null) {
+						if (enemy[x].statusDisplay[a].duration < enemy[x].status[j].duration) {
+							enemy[x].statusDisplay[a].duration = enemy[x].status[j].duration
+						}
+					}
+				}
+			}
+		}//includes status removal
+
+
+	</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
